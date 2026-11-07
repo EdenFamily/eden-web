@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { contracts, elysium } from "../lib/chain";
+import { Link } from "../components/router";
 
 const SECTIONS = [
   ["overview", "What is Eden"],
@@ -139,6 +140,7 @@ export function Docs() {
               </table>
             </div>
             <p>Eden adds Elysium to your wallet automatically when you sign in. To add it yourself, use chain ID {elysium.id} and HYPE as the currency.</p>
+            <p>Logos, colours and the token logo are in the <Link to="/brand">brand kit</Link>.</p>
           </section>
 
           <section id="risks">

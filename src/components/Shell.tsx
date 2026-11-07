@@ -122,13 +122,14 @@ export function Shell({ children, search, onSearch }: { children: ReactNode; sea
   return (
     <>
       <nav className="side" aria-label="Main">
-        <Link className="brand" to="/"><Mark /><b>EDEN</b></Link>
+        <Link className="brand" to="/" aria-label="Eden home"><Mark /><b aria-hidden="true">DEN</b></Link>
         {NAV.map((n) => <Link key={n.to} className="nav" to={n.to} aria-current={active(n.to) ? "page" : undefined}>{n.icon()}{n.label}</Link>)}
         <span className="nav" aria-disabled="true">{I.perps()}Perps<span className="soon">Soon</span></span>
         <Link className="nav docs" to="/docs" aria-current={path.startsWith("/docs") ? "page" : undefined}>{I.docs()}Docs</Link>
         <button className="nav" type="button" onClick={(e) => { e.stopPropagation(); setOpen(true); }}>{I.signin()}<span>{w.address ? short(w.address) : "Sign in"}</span></button>
       </nav>
       <header className="top">
+        <Link className="mbrand" to="/" aria-label="Eden home"><Mark size={30} /></Link>
         <label className="search" htmlFor="q">{I.search()}
           <input id="q" ref={searchRef} type="search" placeholder="Search name, ticker or address" autoComplete="off" value={search}
             onChange={(e) => { onSearch(e.target.value); if (path !== "/") navigate("/"); }} />
@@ -143,7 +144,7 @@ export function Shell({ children, search, onSearch }: { children: ReactNode; sea
         </div>
       </header>
       <main>{children}</main>
-      <footer><span>Eden is a non-custodial interface on Elysium. Tokens are created by their creators. Nothing here is financial advice.</span><span className="mono">Chain 99901 · HYPE</span></footer>
+      <footer><span>Eden is a non-custodial interface on Elysium. Tokens are created by their creators. Nothing here is financial advice.</span><span className="foot-links"><Link to="/docs">Docs</Link><Link to="/brand">Brand kit</Link><span className="mono">Chain 99901 · HYPE</span></span></footer>
       <nav className="mbar" aria-label="Main">
         {NAV.map((n) => <Link key={n.to} to={n.to} aria-current={active(n.to) ? "page" : undefined}>{n.icon(20)}{n.label.replace(" a token", "")}</Link>)}
       </nav>

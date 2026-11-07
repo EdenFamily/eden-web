@@ -48,7 +48,11 @@ export function Explore({ search }: { search: string }) {
   const rows = list.data?.tokens ?? [];
   return (
     <div className="wrap">
-      <div className="head"><h1>Explore</h1><Link className="btn btn-launch" to="/create">{I.plus()}Launch a token</Link></div>
+      <section className="hero" aria-label="Eden">
+        <h1>Every token starts in Eden.</h1>
+        <p>Launch a token in one transaction. It trades from the first second and graduates at about $72K into a locked Uniswap pool on Elysium.</p>
+        <Link className="btn btn-launch" to="/create">{I.plus()}Launch a token</Link>
+      </section>
       <section className="sec" aria-label="Trending">
         <div className="sec-row"><h2>Trending</h2>
           <div className="arrows">

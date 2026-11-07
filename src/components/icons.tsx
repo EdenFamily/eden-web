@@ -27,11 +27,10 @@ export const I = {
   flip: (s = 16) => <svg {...base(s)} strokeWidth={1.8}><path d="M7 4v16M3 16l4 4 4-4M17 20V4M13 8l4-4 4 4" /></svg>,
 };
 
-export function Mark() {
-  return (
-    <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true">
-      <circle cx="13" cy="14" r="7" fill="var(--ink)" />
-      <ellipse cx="13" cy="6" rx="8" ry="2.2" fill="none" stroke="var(--accent)" strokeWidth="1.6" />
-    </svg>
-  );
+/** Eden's eclipse E, served from public/brand. The light theme gets the deeper on-light version. */
+export function Mark({ size = 30 }: { size?: number }) {
+  return <>
+    <img className="mark on-dark" src="/brand/eden-mark.svg" width={size} height={size} alt="" />
+    <img className="mark on-light" src="/brand/eden-mark-onlight.svg" width={size} height={size} alt="" />
+  </>;
 }

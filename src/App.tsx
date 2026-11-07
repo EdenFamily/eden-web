@@ -5,6 +5,7 @@ import { usePath } from "./components/router";
 import { Shell } from "./components/Shell";
 import { Toast, toast } from "./components/ui";
 import { Create } from "./pages/Create";
+import { Brand } from "./pages/Brand";
 import { Docs } from "./pages/Docs";
 import { Explore } from "./pages/Explore";
 import { Portfolio } from "./pages/Portfolio";
@@ -45,6 +46,7 @@ export function App() {
     : path.startsWith("/portfolio") ? <Portfolio />
     : path.startsWith("/referrals") ? <Referrals />
     : path.startsWith("/docs") ? <Docs />
+    : path.startsWith("/brand") ? <Brand />
     : path.startsWith("/link") ? <LinkResult />
     : <Explore search={search} />;
   return <><Shell search={search} onSearch={setSearch}>{page}</Shell><Toast /></>;

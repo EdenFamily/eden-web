@@ -1,4 +1,5 @@
 import { short } from "../lib/format";
+import { EthosChip, type EthosSource } from "./Ethos";
 import { Copy } from "./ui";
 
 /** Platform logo shown after a verified handle. */
@@ -12,7 +13,7 @@ export function PlatformMark({ platform }: { platform: "x" | "tiktok" }) {
   );
 }
 
-type Source = { creator: string; creator_x?: string | null; creator_tiktok?: string | null; creator_verified?: boolean };
+type Source = EthosSource & { creator: string; creator_x?: string | null; creator_tiktok?: string | null; creator_verified?: boolean };
 
 /**
  * Who created a token: the creator's verified X or TikTok handle (only for launches inside the 5-per-month quota),
@@ -25,7 +26,7 @@ export function Creator({ t, compact }: { t: Source; compact?: boolean }) {
   if (compact) return name ?? <span className="mono">{short(t.creator)}</span>;
   return (
     <span className="creator"><span className="faint">Created by</span>
-      {name && <><span className="av">{handle![0]!.toUpperCase()}</span>{name}<span className="dotsep" /></>}
+      {name && <><span className="av">{handle![0]!.toUpperCase()}</span>{name}{platform === "x" && <EthosChip t={t} />}<span className="dotsep" /></>}
       <span className="mono">{short(t.creator)}</span><Copy value={t.creator} label="Copy creator wallet" /></span>
   );
 }

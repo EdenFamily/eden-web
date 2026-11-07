@@ -40,7 +40,8 @@ function useTheme(): [boolean, () => void] {
 function LinkedAccounts({ wallet }: { wallet: string }) {
   const links = useData(() => api.creator(wallet.toLowerCase()), [wallet]);
   const platforms = useData(() => api.oauthPlatforms(), []);
-  const rows = (["x", "tiktok"] as const).filter((p) => links.data?.[p] || platforms.data?.[p]);
+  // TikTok shows as "Soon" until its keys are configured; X appears only once it is configured.
+  const rows = (["x", "tiktok"] as const).filter((p) => links.data?.[p] || platforms.data?.[p] || (p === "tiktok" && platforms.data));
   if (rows.length === 0) return null;
   return (
     <>
@@ -50,7 +51,9 @@ function LinkedAccounts({ wallet }: { wallet: string }) {
         const icon = <span className="ic" style={{ background: "var(--ink)", color: "var(--bg)" }}><PlatformMark platform={platform} /></span>;
         return linked
           ? <div key={platform} className="opt">{icon}<span className="vx" style={{ fontSize: 13 }}>@{linked.handle}</span><span className="end ok">Linked</span></div>
-          : <button key={platform} className="opt" type="button" onClick={() => { window.location.href = api.oauthStartUrl(platform, wallet); }}>{icon}Link {platform === "x" ? "X" : "TikTok"}<span className="end ok">Connect</span></button>;
+          : !platforms.data?.[platform]
+            ? <button key={platform} className="opt" type="button" disabled>{icon}Link {platform === "x" ? "X" : "TikTok"}<span className="soon" style={{ marginLeft: "auto" }}>Soon</span></button>
+            : <button key={platform} className="opt" type="button" onClick={() => { window.location.href = api.oauthStartUrl(platform, wallet); }}>{icon}Link {platform === "x" ? "X" : "TikTok"}<span className="end ok">Connect</span></button>;
       })}
       <p className="help" style={{ fontSize: 12 }}>A linked handle shows as the creator on your tokens. Each account links to one Eden wallet, permanently.</p>
       <div className="sep" />

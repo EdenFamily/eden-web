@@ -8,8 +8,9 @@ export type Token = {
   trades_count: number; holders: number; volume_24h_quote: string; trades_24h: number; change_24h: number;
   graduation_progress: number; market_cap_usd: number | null; volume_24h_usd: number | null; price_usd: number | null;
   creator_x: string | null; creator_tiktok: string | null; creator_verified: boolean;
+  creator_ethos_score: number | null; creator_ethos_level: string | null;
 };
-export type CreatorLinks = { address: string; x?: { handle: string }; tiktok?: { handle: string } };
+export type CreatorLinks = { address: string; x?: { handle: string; ethos: { score: number; level: string; profileUrl: string } | null }; tiktok?: { handle: string } };
 export type Trade = {
   tx_hash: string; log_index: number; at: string; token: string; venue: "curve" | "pool"; side: "buy" | "sell";
   trader: string; signer: string; source: string; quote_amount: string; token_amount: string; price_quote: string;

@@ -1,15 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="Eden">
-  <defs>
-    <radialGradient id="eo" cx="60%" cy="38%" r="65%"><stop offset="0" stop-color="#0e3238"/><stop offset="1" stop-color="#03141a"/></radialGradient>
-    <linearGradient id="ec" gradientUnits="userSpaceOnUse" x1="70" y1="8" x2="40" y2="94"><stop offset="0" stop-color="#ffcf5e"/><stop offset=".2" stop-color="#ffe2a0"/><stop offset=".42" stop-color="#bff7d6"/><stop offset=".6" stop-color="#97fce4"/><stop offset="1" stop-color="#3aa6c4"/></linearGradient>
-    <linearGradient id="eb" gradientUnits="userSpaceOnUse" x1="19" y1="0" x2="66" y2="0"><stop offset="0" stop-color="#97fce4"/><stop offset=".65" stop-color="#97fce4" stop-opacity=".8"/><stop offset="1" stop-color="#97fce4" stop-opacity="0"/></linearGradient>
-    <radialGradient id="ed"><stop offset="0" stop-color="#fffaf0"/><stop offset=".16" stop-color="#ffd98a"/><stop offset=".5" stop-color="#ffb84a" stop-opacity=".3"/><stop offset="1" stop-color="#ffb84a" stop-opacity="0"/></radialGradient>
-    <filter id="eg" filterUnits="userSpaceOnUse" x="0" y="0" width="100" height="100"><feGaussianBlur stdDeviation="1.4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-  </defs>
-  <circle cx="50" cy="50" r="39.5" fill="url(#eo)" stroke="#97fce4" stroke-opacity=".08" stroke-width=".6"/>
-  <g filter="url(#eg)"><path fill="url(#ec)" d="M64.37 12.67 A40 40 0 1 0 83.9 71.24 A35.5 35.5 0 1 1 64.37 12.67 Z"/><path fill="url(#eb)" d="M19 46.9 L66 48.4 L66 51.4 L19 53.1 Z"/></g>
-  <circle cx="64.37" cy="12.67" r="12" fill="url(#ed)"/>
-  <ellipse cx="64.37" cy="12.67" rx="13" ry=".8" fill="url(#ed)"/>
-  <ellipse cx="64.37" cy="12.67" rx=".8" ry="9" fill="url(#ed)"/>
-  <circle cx="64.37" cy="12.67" r="2" fill="#fffaf0"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="Eden"><defs><linearGradient id="g" gradientUnits="userSpaceOnUse" x1="84" y1="12" x2="30" y2="92"><stop offset="0" stop-color="#ffd36b"/><stop offset="0.3" stop-color="#d8f7c9"/><stop offset="0.55" stop-color="#97fce4"/><stop offset="1" stop-color="#4fb8cf"/></linearGradient><radialGradient id="d"><stop offset="0" stop-color="#fff8e6"/><stop offset=".25" stop-color="#ffd36b"/><stop offset="1" stop-color="#ffb84a" stop-opacity="0"/></radialGradient></defs><path d="M76 19 H54 A31 31 0 0 0 54 81 H76" fill="none" stroke="url(#g)" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/><path d="M29 50 H66" stroke="url(#g)" stroke-width="10.12" stroke-linecap="round"/><circle cx="76" cy="19" r="10" fill="url(#d)"/><circle cx="76" cy="19" r="2.6" fill="#fff8e6"/></svg>

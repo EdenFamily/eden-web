@@ -129,7 +129,7 @@ export function Shell({ children, search, onSearch }: { children: ReactNode; sea
         <button className="nav" type="button" onClick={(e) => { e.stopPropagation(); setOpen(true); }}>{I.signin()}<span>{w.address ? short(w.address) : "Sign in"}</span></button>
       </nav>
       <header className="top">
-        <Link className="mbrand" to="/" aria-label="Eden home"><Mark size={30} /></Link>
+        <Link className="mbrand" to="/" aria-label="Eden home"><Mark size={32} kind="icon" /></Link>
         <label className="search" htmlFor="q">{I.search()}
           <input id="q" ref={searchRef} type="search" placeholder="Search name, ticker or address" autoComplete="off" value={search}
             onChange={(e) => { onSearch(e.target.value); if (path !== "/") navigate("/"); }} />

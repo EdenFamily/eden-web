@@ -5,9 +5,9 @@ type Asset = { file: string; label: string };
 
 const SYMBOLS: Array<Asset & { ground: "dark" | "light" }> = [
   { file: "eden-mark.svg", label: "Full colour", ground: "dark" },
+  { file: "eden-icon.svg", label: "Icon", ground: "dark" },
   { file: "eden-mark-flat.svg", label: "Flat", ground: "dark" },
   { file: "eden-mark-white.svg", label: "White", ground: "dark" },
-  { file: "eden-mark-mint.svg", label: "Mint", ground: "dark" },
   { file: "eden-mark-onlight.svg", label: "On light", ground: "light" },
   { file: "eden-mark-ink.svg", label: "Ink", ground: "light" },
 ];
@@ -42,8 +42,8 @@ export function Brand() {
         <a className="btn btn-quiet" href={B + "eden-mark.svg"} download>Download the logo</a></div>
 
       <section className="panel brand-hero" aria-label="Logo">
-        <div className="brand-lock"><img src={B + "eden-mark.svg"} alt="" /><b aria-hidden="true">DEN</b></div>
-        <p>The eclipse E: first light breaking over a new world. The crescent of light is the round of the E, the bar completes it, and the gold point is the first sunrise.</p>
+        <div className="brand-lock"><img src={B + "eden-mark-word.svg"} alt="" /><b aria-hidden="true">DEN</b></div>
+        <p>The Eden E: the round of a world, a bar of light across it, and a gold point where the first sunrise breaks.</p>
       </section>
 
       <section className="bk-sec" aria-labelledby="bk-symbol">
@@ -56,7 +56,7 @@ export function Brand() {
             </figure>
           ))}
         </div>
-        <p className="help">Use full colour on screens. Below 24 pixels, use the flat symbol. Use one colour only where colour is not possible.</p>
+        <p className="help">Use full colour on dark screens and the icon wherever the mark sits alone in a circle or square (favicon, avatars, token lists). Use one colour only where colour is not possible.</p>
       </section>
 
       <section className="bk-sec" aria-labelledby="bk-word">

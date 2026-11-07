@@ -1,10 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="Eden">
-  <defs>
-    <linearGradient id="lc" gradientUnits="userSpaceOnUse" x1="70" y1="8" x2="40" y2="94"><stop offset="0" stop-color="#d99a1e"/><stop offset=".3" stop-color="#3f9a6e"/><stop offset=".6" stop-color="#0b7356"/><stop offset="1" stop-color="#0d5f72"/></linearGradient>
-    <linearGradient id="lb" gradientUnits="userSpaceOnUse" x1="19" y1="0" x2="66" y2="0"><stop offset="0" stop-color="#0b7356"/><stop offset=".7" stop-color="#0b7356" stop-opacity=".85"/><stop offset="1" stop-color="#0b7356" stop-opacity="0"/></linearGradient>
-    <radialGradient id="ld"><stop offset="0" stop-color="#ffd36b"/><stop offset=".35" stop-color="#f0b43c" stop-opacity=".55"/><stop offset="1" stop-color="#f0b43c" stop-opacity="0"/></radialGradient>
-  </defs>
-  <path fill="url(#lc)" d="M64.37 12.67 A40 40 0 1 0 83.9 71.24 A35.5 35.5 0 1 1 64.37 12.67 Z"/><path fill="url(#lb)" d="M19 46.9 L66 48.4 L66 51.4 L19 53.1 Z"/>
-  <circle cx="64.37" cy="12.67" r="9" fill="url(#ld)"/>
-  <circle cx="64.37" cy="12.67" r="3" fill="#e0a12a"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="Eden"><defs><linearGradient id="g" gradientUnits="userSpaceOnUse" x1="84" y1="12" x2="30" y2="92"><stop offset="0" stop-color="#d99a1e"/><stop offset="0.3" stop-color="#3f9a6e"/><stop offset="0.6" stop-color="#0b7356"/><stop offset="1" stop-color="#0d5f72"/></linearGradient><radialGradient id="d"><stop offset="0" stop-color="#fff8e6"/><stop offset=".25" stop-color="#ffd36b"/><stop offset="1" stop-color="#ffb84a" stop-opacity="0"/></radialGradient></defs><path d="M76 19 H54 A31 31 0 0 0 54 81 H76" fill="none" stroke="url(#g)" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/><path d="M29 50 H66" stroke="url(#g)" stroke-width="10.12" stroke-linecap="round"/><circle cx="76" cy="19" r="8" fill="url(#d)"/><circle cx="76" cy="19" r="3.4" fill="#e0a12a"/></svg>

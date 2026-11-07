@@ -27,10 +27,11 @@ export const I = {
   flip: (s = 16) => <svg {...base(s)} strokeWidth={1.8}><path d="M7 4v16M3 16l4 4 4-4M17 20V4M13 8l4-4 4 4" /></svg>,
 };
 
-/** Eden's eclipse E, served from public/brand. The light theme gets the deeper on-light version. */
-export function Mark({ size = 30 }: { size?: number }) {
+/** Eden's E. "word" sits with the DEN letters of the wordmark; "icon" is the E on its orb. Light themes get the deeper on-light file. */
+export function Mark({ size = 26, kind = "word" }: { size?: number; kind?: "word" | "icon" }) {
+  if (kind === "icon") return <img className="mark" src="/brand/eden-icon.svg" width={size} height={size} alt="" />;
   return <>
-    <img className="mark on-dark" src="/brand/eden-mark.svg" width={size} height={size} alt="" />
-    <img className="mark on-light" src="/brand/eden-mark-onlight.svg" width={size} height={size} alt="" />
+    <img className="mark on-dark" src="/brand/eden-mark-word.svg" width={size} height={size} alt="" />
+    <img className="mark on-light" src="/brand/eden-mark-word-onlight.svg" width={size} height={size} alt="" />
   </>;
 }

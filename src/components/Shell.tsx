@@ -33,18 +33,28 @@ function useTheme(): [boolean, () => void] {
   }];
 }
 
-function LinkRow({ platform, wallet }: { platform: "x" | "tiktok"; wallet: string }) {
+/**
+ * X / TikTok linking. A platform shows only once its OAuth keys are configured on the server (or when this wallet
+ * already has that account linked); with neither platform available the whole section is hidden.
+ */
+function LinkedAccounts({ wallet }: { wallet: string }) {
   const links = useData(() => api.creator(wallet.toLowerCase()), [wallet]);
   const platforms = useData(() => api.oauthPlatforms(), []);
-  const linked = links.data?.[platform];
-  const name = platform === "x" ? "X" : "TikTok";
-  const icon = <span className="ic" style={{ background: "var(--ink)", color: "var(--bg)" }}><PlatformMark platform={platform} /></span>;
-  if (linked) return <div className="opt">{icon}<span className="vx" style={{ fontSize: 13 }}>@{linked.handle}</span><span className="end ok">Linked</span></div>;
-  const ready = platforms.data?.[platform];
+  const rows = (["x", "tiktok"] as const).filter((p) => links.data?.[p] || platforms.data?.[p]);
+  if (rows.length === 0) return null;
   return (
-    <button className="opt" type="button" disabled={!ready} onClick={() => { window.location.href = api.oauthStartUrl(platform, wallet); }}>
-      {icon}Link {name}<span className={`end ${ready ? "ok" : ""}`}>{ready ? "Connect" : "Soon"}</span>
-    </button>
+    <>
+      <span className="lbl">Linked accounts</span>
+      {rows.map((platform) => {
+        const linked = links.data?.[platform];
+        const icon = <span className="ic" style={{ background: "var(--ink)", color: "var(--bg)" }}><PlatformMark platform={platform} /></span>;
+        return linked
+          ? <div key={platform} className="opt">{icon}<span className="vx" style={{ fontSize: 13 }}>@{linked.handle}</span><span className="end ok">Linked</span></div>
+          : <button key={platform} className="opt" type="button" onClick={() => { window.location.href = api.oauthStartUrl(platform, wallet); }}>{icon}Link {platform === "x" ? "X" : "TikTok"}<span className="end ok">Connect</span></button>;
+      })}
+      <p className="help" style={{ fontSize: 12 }}>A linked handle shows as the creator on your tokens. Each account links to one Eden wallet, permanently.</p>
+      <div className="sep" />
+    </>
   );
 }
 
@@ -79,11 +89,7 @@ function WalletPanel({ onClose }: { onClose: () => void }) {
       </div>
       {w.wrongChain && <button className="btn btn-primary btn-sm" type="button" onClick={() => void switchToElysium()}>Switch to Elysium</button>}
       <div className="sep" />
-      <span className="lbl">Linked accounts</span>
-      <LinkRow platform="x" wallet={w.address} />
-      <LinkRow platform="tiktok" wallet={w.address} />
-      <p className="help" style={{ fontSize: 12 }}>A linked handle shows as the creator on your tokens. Each account links to one Eden wallet, permanently.</p>
-      <div className="sep" />
+      <LinkedAccounts wallet={w.address} />
       <div className="row2">
         <button className="btn btn-quiet btn-sm" type="button" onClick={() => { onClose(); navigate("/portfolio"); }}>Portfolio</button>
         <button className="btn btn-quiet btn-sm" type="button" onClick={() => { disconnect(); onClose(); toast("Disconnected"); }}>Disconnect</button>

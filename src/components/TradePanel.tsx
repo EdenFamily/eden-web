@@ -6,7 +6,7 @@ import { quoteBuy, quoteSell, readCurve, type CurveState } from "../lib/curve";
 import { amount, fromWei, hype } from "../lib/format";
 import { PERMIT_AMOUNT, PERMIT_SECONDS, permit2Abi, permitTyped, poolId, poolKey, quotePool, readPool, SLIPPAGE_SELECTORS, swapCalldata, type Permit, type PoolState } from "../lib/pool";
 import { minimumOut, setSlippage, SLIPPAGE_PRESETS, useSlippage } from "../lib/slippage";
-import { send, sendData, signTypedData, useWallet } from "../lib/wallet";
+import { send, sendData, signTypedData, switchToElysium, useWallet } from "../lib/wallet";
 import { I } from "./icons";
 import { askToConnect } from "./Shell";
 import { TokenImage, toast } from "./ui";
@@ -27,20 +27,32 @@ function SlippageRow() {
   const preset = (SLIPPAGE_PRESETS as readonly number[]).includes(pct);
   return (<>
     <div className="kv"><span>Slippage</span>
-      <button className="slip-btn" type="button" aria-expanded={open} onClick={() => setOpen(!open)}>{pct}% <span aria-hidden="true">{open ? "▴" : "▾"}</span></button></div>
-    {open && <div className="slip-edit" role="group" aria-label="Slippage tolerance">
+      <button className="slip-btn" type="button" aria-expanded={open} aria-controls="slip-edit" aria-label={`Slippage ${pct}%, change`} onClick={() => setOpen(!open)}>{pct}%
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg></button></div>
+    {open && <div className="slip-edit" id="slip-edit" role="group" aria-label="Slippage tolerance">
       {SLIPPAGE_PRESETS.map((p) => <button key={p} className="chip" type="button" aria-pressed={pct === p} onClick={() => { setSlippage(p); setCustom(""); }}>{p}%</button>)}
       <label className="slip-custom"><input id="slip-custom" inputMode="decimal" placeholder={preset ? "Custom" : String(pct)} value={custom}
         onChange={(e) => { const v = e.target.value.replace(/[^0-9.]/g, ""); setCustom(v); if (Number(v) > 0) setSlippage(Number(v)); }} aria-label="Custom slippage in percent" />%</label>
+      {pct > 10 && <p className="slip-warn" role="note">High slippage: you could get up to {pct}% less than quoted.</p>}
+      {pct < 0.5 && <p className="slip-warn" role="note">Very low slippage: trades may fail if the price moves.</p>}
     </div>}
   </>);
 }
+
+/** The phone trade bar picks Buy or Sell before scrolling here. */
+const sideSubs = new Set<(s: "buy" | "sell") => void>();
+export const pickTradeSide = (s: "buy" | "sell") => sideSubs.forEach((f) => f(s));
 
 /** Buy and sell: on the bonding curve before graduation, on the token's Uniswap V4 pool after. */
 export function TradePanel({ t }: { t: Token }) {
   const w = useWallet();
   const slip = useSlippage();
   const [side, setSide] = useState<"buy" | "sell">("buy");
+  useEffect(() => {
+    const f = (s: "buy" | "sell") => setSide((cur) => { if (cur !== s) setInput(""); return s; });
+    sideSubs.add(f);
+    return () => void sideSubs.delete(f);
+  }, []);
   const [input, setInput] = useState("0.5");
   const [curve, setCurve] = useState<CurveState>();
   const [pool, setPool] = useState<PoolState>();
@@ -50,7 +62,7 @@ export function TradePanel({ t }: { t: Token }) {
   const onCurve = t.phase === "curve";
   const key = useMemo(() => poolKey(t.address as Address), [t.address]);
   useEffect(() => {
-    if (onCurve) { void readCurve(t.curve as Address).then(setCurve); return; }
+    if (onCurve) { void readCurve(t.curve as Address).then((c) => { setCurve(c); setPoolErr(""); }, () => setPoolErr("Couldn't read the bonding curve. Check your connection and reload the page.")); return; }
     const id = poolId(key);
     if (t.pool_id && id.toLowerCase() !== t.pool_id.toLowerCase()) { setPoolErr("This token's pool isn't the Eden pool this site trades. Trade it on Uniswap instead."); return; }
     void readPool(id).then(setPool, () => setPoolErr("Couldn't read the pool. Try again in a moment."));
@@ -59,6 +71,13 @@ export function TradePanel({ t }: { t: Token }) {
     if (!w.address) return setHeld(0n);
     void publicClient.readContract({ address: t.address as Address, abi: erc20Abi, functionName: "balanceOf", args: [w.address] }).then(setHeld);
   }, [w.address, t.address, busy]);
+  // Selling asks for a one-time token approval first; say so before the wallet opens twice.
+  const [allowance, setAllowance] = useState<bigint>();
+  useEffect(() => {
+    if (!w.address || side !== "sell") return setAllowance(undefined);
+    const spender = (onCurve ? t.curve : UNISWAP.permit2) as Address;
+    void publicClient.readContract({ address: t.address as Address, abi: erc20Abi, functionName: "allowance", args: [w.address, spender] }).then(setAllowance, () => setAllowance(undefined));
+  }, [w.address, t.address, t.curve, onCurve, side, busy]);
   const amountIn = useMemo(() => { try { return input ? parseUnits(input, 18) : 0n; } catch { return 0n; } }, [input]);
   const q = amountIn === 0n ? undefined
     : onCurve ? (curve ? (side === "buy" ? quoteBuy(curve, amountIn) : quoteSell(curve, amountIn)) : undefined)
@@ -66,6 +85,8 @@ export function TradePanel({ t }: { t: Token }) {
   const minOut = q ? minimumOut(q.out, slip) : 0n;
   const balance = side === "buy" ? w.balance ?? 0n : held;
   const tooMuch = amountIn > balance;
+  const needsApproval = side === "sell" && allowance != null && amountIn > 0n && allowance < amountIn;
+  const impact = q ? q.impactBps / 100 : 0;
 
   async function poolTrade(me: Address, out: bigint) {
     const deadline = (await publicClient.getBlock()).timestamp + 120n;
@@ -76,7 +97,7 @@ export function TradePanel({ t }: { t: Token }) {
       const [allowed, expiration, nonce] = await publicClient.readContract({ address: UNISWAP.permit2, abi: permit2Abi, functionName: "allowance", args: [me, t.address as Address, UNISWAP.universalRouter] });
       if (allowed < amountIn || BigInt(expiration) < deadline + 300n) {
         const p: Permit = { details: { token: t.address as Address, amount: PERMIT_AMOUNT, expiration: Number(deadline) + PERMIT_SECONDS, nonce: Number(nonce) }, spender: UNISWAP.universalRouter, sigDeadline: deadline + 1800n };
-        setBusy("Sign in your wallet (no gas)");
+        setBusy("Sign the permit in your wallet (no gas)");
         permit = { permit: p, signature: await signTypedData(permitTyped(p, elysium.id)) };
       }
     }
@@ -114,27 +135,29 @@ export function TradePanel({ t }: { t: Token }) {
   const hypeChip = <><i style={{ background: "var(--accent)", color: "var(--on-accent)" }}>H</i>HYPE</>;
   const tokenChip = <><TokenImage address={t.address} logo={t.logo} size={22} label={t.name} />{t.symbol}</>;
   return (
-    <aside className="panel tex trade" aria-label="Trade">
-      <div className="seg">{(["buy", "sell"] as const).map((s) => <button key={s} type="button" aria-pressed={side === s} onClick={() => { setSide(s); setInput(""); }}>{s === "buy" ? "Buy" : "Sell"}</button>)}</div>
+    <aside className="panel tex trade" id="trade" aria-label={`Trade $${t.symbol}`}>
+      <div className="seg" role="group" aria-label="Buy or sell">{(["buy", "sell"] as const).map((s) => <button key={s} className={s} type="button" aria-pressed={side === s} onClick={() => { setSide(s); setInput(""); }}>{s === "buy" ? "Buy" : "Sell"}</button>)}</div>
       {poolErr ? <p className="note">{poolErr}</p> : (<>
         <div className="box">
-          <div className="box-row"><span className="muted" style={{ fontSize: 13 }}>You pay</span><span className="muted mono" style={{ fontSize: 12 }}>Balance {side === "buy" ? hype(fromWei(w.balance ?? 0n)) : `${amount(fromWei(held))} ${t.symbol}`}</span></div>
-          <div className="box-row"><input id="amt" className="amt" inputMode="decimal" placeholder="0" value={input} onChange={(e) => setInput(e.target.value.replace(/[^0-9.]/g, ""))} aria-label="Amount to pay" />
+          <div className="box-row"><span className="muted" style={{ fontSize: 13 }}>You pay</span>{w.address && <span className="muted mono" style={{ fontSize: 12 }}>Balance {side === "buy" ? hype(fromWei(w.balance ?? 0n)) : <button className="balance-btn" type="button" aria-label="Sell your whole balance" onClick={() => setInput(formatUnits(held, 18))}>{amount(fromWei(held))} {t.symbol}</button>}</span>}</div>
+          <div className="box-row"><input id="amt" className="amt" inputMode="decimal" placeholder="0" value={input} onChange={(e) => setInput(e.target.value.replace(/[^0-9.]/g, ""))} aria-label={side === "buy" ? "HYPE to spend" : `$${t.symbol} to sell`} aria-invalid={!!w.address && tooMuch && amountIn > 0n} />
             <span className="asset">{side === "buy" ? hypeChip : tokenChip}</span></div>
-          <div className="chips">{presets.map((p) => <button key={p} className="chip" type="button" onClick={() => setInput(p.endsWith("%") || p === "Max" ? formatUnits((held * BigInt(p === "Max" ? 100 : parseInt(p))) / 100n, 18) : p)}>{p}</button>)}</div>
+          <div className="chips" role="group" aria-label="Quick amounts">{presets.map((p) => <button key={p} className="chip" type="button" aria-label={p.endsWith("%") || p === "Max" ? `${p === "Max" ? "All" : p} of your $${t.symbol}` : `${p} HYPE`} onClick={() => setInput(p.endsWith("%") || p === "Max" ? formatUnits((held * BigInt(p === "Max" ? 100 : parseInt(p))) / 100n, 18) : p)}>{p}</button>)}</div>
         </div>
         <button className="flip" type="button" aria-label="Switch buy and sell" onClick={() => { setSide(side === "buy" ? "sell" : "buy"); setInput(""); }}>{I.flip()}</button>
         <div className="box"><span className="muted" style={{ fontSize: 13 }}>You get</span>
           <div className="box-row"><span className="amt mono">{q ? (side === "buy" ? amount(Number(formatUnits(q.out, 18))) : Number(formatUnits(q.out, 18)).toFixed(4)) : "—"}</span>
             <span className="asset">{side === "buy" ? tokenChip : hypeChip}</span></div></div>
-        <div className="kv"><span>Price impact</span><b>{q ? (q.impactBps / 100).toFixed(2) + "%" : "—"}</b></div>
+        <div className="kv"><span>Price impact</span><b className={impact >= 15 ? "bad" : impact >= 5 ? "warn" : undefined}>{q ? impact.toFixed(2) + "%" : "—"}</b></div>
+        {impact >= 5 && <p className={`impact-note ${impact >= 15 ? "bad" : ""}`}>{impact >= 15 ? "Very high price impact. A smaller amount gets a much better price." : "High price impact for this size."}</p>}
         <SlippageRow />
         <div className="kv"><span>Minimum received</span><b>{q ? (side === "buy" ? `${amount(Number(formatUnits(minOut, 18)))} ${t.symbol}` : hype(Number(formatUnits(minOut, 18)))) : "—"}</b></div>
-        <div className="kv"><span>Fees</span><b>{feeBps / 100}% {onCurve ? "curve" : "pool"} + {taxBps / 100}% creator</b></div>
+        <div className="kv"><span>Fees</span><b>{feeBps / 100}% {onCurve ? "curve" : "pool"}{taxBps > 0 ? ` + ${taxBps / 100}% creator` : ""}</b></div>
         <div className="kv"><span>Route</span><b>{onCurve ? "Bonding curve" : "Uniswap V4"}</b></div>
-        {w.address && tooMuch && amountIn > 0n && <p className="err">That's more than your balance.</p>}
-        <button className="btn btn-primary btn-block" type="button" style={{ height: 48 }} disabled={!!busy || (!!w.address && (!q || tooMuch))} onClick={() => void go()}>
-          {busy || (!w.address ? "Sign in" : !q ? "Enter an amount" : side === "buy" ? `Buy ${hype(Number(input))}` : `Sell ${amount(Number(input))} ${t.symbol}`)}
+        {needsApproval && !busy && <p className="note" style={{ margin: 0 }}>First sale of ${t.symbol}: your wallet asks for a one-time approval, then the sale.</p>}
+        <button className={`btn btn-block ${side === "sell" && w.address && !w.wrongChain ? "btn-sell" : "btn-primary"}`} type="button" style={{ height: 48 }} aria-live="polite"
+          disabled={!!busy || (!!w.address && !w.wrongChain && (!q || tooMuch))} onClick={() => (w.wrongChain ? void switchToElysium() : void go())}>
+          {busy || (!w.address ? "Connect wallet" : w.wrongChain ? "Switch to Elysium" : amountIn === 0n ? "Enter an amount" : tooMuch ? `Not enough ${side === "buy" ? "HYPE" : "$" + t.symbol}` : !q ? "Getting a quote…" : side === "buy" ? `Buy ${hype(Number(input))}` : needsApproval ? `Approve and sell ${amount(Number(input))}` : `Sell ${amount(Number(input))} ${t.symbol}`)}
         </button>
       </>)}
     </aside>

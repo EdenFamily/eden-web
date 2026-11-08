@@ -123,7 +123,7 @@ export function Shell({ children, search, onSearch, prelaunch = false }: { child
         <Link className="brand" to="/" aria-label="Eden home"><Mark size={22} /></Link>
         {nav.map((n) => <Link key={n.to} className="nav" to={n.to} aria-current={(prelaunch && n.to === "/" ? path === "/" : active(n.to)) ? "page" : undefined}>{n.icon()}{n.label}</Link>)}
         {!prelaunch && <>
-          <span className="nav" aria-disabled="true">{I.perps()}Perps<span className="soon">Soon</span></span>
+          <Link className="nav" to="/docs#perps">{I.perps()}Perps<span className="soon">Soon</span></Link>
           <Link className="nav docs" to="/docs" aria-current={path.startsWith("/docs") ? "page" : undefined}>{I.docs()}Docs</Link>
           <button className="nav" type="button" onClick={(e) => { e.stopPropagation(); openWallet(); }}>{I.signin()}<span>{w.address ? short(w.address) : "Sign in"}</span></button>
         </>}

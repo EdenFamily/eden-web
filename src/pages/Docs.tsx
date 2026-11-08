@@ -16,6 +16,7 @@ const SECTIONS = [
   ["identity", "Creator identity"],
   ["x-launch", "Launch from X"],
   ["referrals", "Referrals"],
+  ["perps", "Perps"],
   ["network", "Network and contracts"],
   ["risks", "Risks"],
   ...DEV_SECTIONS,
@@ -159,6 +160,21 @@ export function Docs() {
           <section id="referrals">
             <h2>Referrals</h2>
             <p>Create your link on <b>Referrals</b>. Wallets that join through it are yours: you earn <b>25% of Eden's fee</b> on every trade they make after joining. Earnings are paid in HYPE once a day, once you've earned at least 0.01 HYPE.</p>
+          </section>
+
+          <section id="perps">
+            <h2>Perps <span className="soon">Soon</span></h2>
+            <p>Graduation isn't the finish line. Tokens that keep trading after graduation are headed for perpetual markets.</p>
+            <p><b>Every trade helps fund its token's perps listing.</b> Part of the fees Eden earns on each token is saved in the Eden treasury and tracked per token. When a token's fund covers the cost of a perps listing, it goes toward listing that token with our perps partner, so the community doesn't have to pay for it.</p>
+            <h3>How it works (planned)</h3>
+            <ol>
+              <li><b>Fees in.</b> Every trade pays the 1% trading fee: 70% to the creator, 30% to Eden. A share of Eden's 30% accrues to that token's perps fund.</li>
+              <li><b>Verifiable accounting.</b> Each fund is calculated from on-chain fee events (<span className="mono">FeesSwept</span> on the curve, <span className="mono">HookFeeCollected</span> on the pool), so anyone can check a token's balance against the chain.</li>
+              <li><b>Eligibility.</b> The token has graduated and keeps trading in its locked Uniswap v4 pool, meeting published volume and liquidity thresholds.</li>
+              <li><b>Listing.</b> When the fund covers the listing cost (for a HIP-3 market on Hyperliquid, an auction slot with a 500 HYPE minimum, or our partner's fee), the token is listed with our perps partner.</li>
+              <li><b>Pricing and risk.</b> The mark price comes from the token's own locked pool, using a time-weighted average that one trade can't spike. New markets start on isolated margin with open-interest caps.</li>
+            </ol>
+            <p>The exact share, thresholds and partner are published before perps go live.</p>
           </section>
 
           <section id="network">

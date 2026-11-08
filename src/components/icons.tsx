@@ -28,10 +28,12 @@ export const I = {
 };
 
 /** Eden's E. "word" sits with the DEN letters of the wordmark; "icon" is the E on its orb. Light themes get the deeper on-light file. */
-export function Mark({ size = 26, kind = "word" }: { size?: number; kind?: "word" | "icon" }) {
+/** Eden's logo: the EDEN wordmark (theme-aware), or the E on the dark orb for square spots. */
+export function Mark({ size = 20, kind = "word" }: { size?: number; kind?: "word" | "icon" }) {
   if (kind === "icon") return <img className="mark" src="/brand/eden-icon.svg" width={size} height={size} alt="" />;
+  const width = Math.round(size * 4.56);
   return <>
-    <img className="mark on-dark" src="/brand/eden-mark-word.svg" width={size} height={size} alt="" />
-    <img className="mark on-light" src="/brand/eden-mark-word-onlight.svg" width={size} height={size} alt="" />
+    <img className="mark on-dark" src="/brand/eden-wordmark.svg" width={width} height={size} alt="Eden" />
+    <img className="mark on-light" src="/brand/eden-wordmark-onlight.svg" width={width} height={size} alt="Eden" />
   </>;
 }

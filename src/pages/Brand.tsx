@@ -20,7 +20,7 @@ const COLOURS = [
   { name: "Deep space", hex: "#04181C", note: "Grounds, the orb" },
   { name: "Eden teal", hex: "#061A1E", note: "Site background" },
   { name: "Mint", hex: "#97FCE4", note: "The bar, highlights" },
-  { name: "Elysium teal", hex: "#5BB2CB", note: "End of the crescent" },
+  { name: "Elysium teal", hex: "#5BB2CB", note: "End of the gradient" },
   { name: "First light", hex: "#FFD36B", note: "The dawn point, graduation" },
   { name: "Mist", hex: "#EAF1F3", note: "Text on dark" },
 ];
@@ -39,11 +39,11 @@ export function Brand() {
   return (
     <div className="wrap">
       <div className="head"><div className="brand-head"><h1>Brand kit</h1><p className="muted">Eden's logo, colours and type, for writing about Eden, listing $EDEN or building on it.</p></div>
-        <a className="btn btn-quiet" href={B + "eden-mark.svg"} download>Download the logo</a></div>
+        <a className="btn btn-quiet" href={B + "eden-wordmark.svg"} download>Download the logo</a></div>
 
       <section className="panel brand-hero" aria-label="Logo">
-        <div className="brand-lock"><img src={B + "eden-mark-word.svg"} alt="" /><b aria-hidden="true">DEN</b></div>
-        <p>The Eden E: the round of a world, a bar of light across it, and a gold point where the first sunrise breaks.</p>
+        <div className="brand-lock"><img className="on-dark-only" src={B + "eden-wordmark.svg"} alt="Eden" /><img className="on-light-only" src={B + "eden-wordmark-onlight.svg"} alt="Eden" /></div>
+        <p>EDEN in Michroma, drawn as outlines. The first E carries first light: the dawn gradient and a gold point where the sunrise breaks.</p>
       </section>
 
       <section className="bk-sec" aria-labelledby="bk-symbol">
@@ -69,7 +69,7 @@ export function Brand() {
             </figure>
           ))}
         </div>
-        <p className="help">The symbol is the E, so the wordmark reads EDEN. In running text, write Eden.</p>
+        <p className="help">Use the wordmark wherever there is room; the symbol (the first E) is for square spaces. In running text, write Eden.</p>
       </section>
 
       <section className="bk-sec" aria-labelledby="bk-social">

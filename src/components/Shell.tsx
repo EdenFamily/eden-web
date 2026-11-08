@@ -110,7 +110,7 @@ export function Shell({ children, search, onSearch }: { children: ReactNode; sea
   return (
     <>
       <nav className="side" aria-label="Main">
-        <Link className="brand" to="/" aria-label="Eden home"><Mark /><b aria-hidden="true">DEN</b></Link>
+        <Link className="brand" to="/" aria-label="Eden home"><Mark size={22} /></Link>
         {NAV.map((n) => <Link key={n.to} className="nav" to={n.to} aria-current={active(n.to) ? "page" : undefined}>{n.icon()}{n.label}</Link>)}
         <span className="nav" aria-disabled="true">{I.perps()}Perps<span className="soon">Soon</span></span>
         <Link className="nav docs" to="/docs" aria-current={path.startsWith("/docs") ? "page" : undefined}>{I.docs()}Docs</Link>

@@ -123,13 +123,13 @@ export function Docs() {
 
           <section id="x-launch">
             <h2>Launch from X <span className="soon">Soon</span></h2>
-            <p>Launch a token without opening Eden: post on X and tag <b>@edenfamily</b> with a ticker and a name, and attach an image.</p>
+            <p>Launch a token without opening Eden: post on X and tag <b>@edenfamily</b> with a ticker and a name, and attach an image. First link your X account to your Eden wallet from the wallet menu; launches from X accounts that aren't linked are not made.</p>
             <div className="panel tex doc-example"><span className="mono">@edenfamily $FROG Frog</span></div>
             <ul>
               <li><b>Ticker</b> is the word after <span className="mono">$</span>; <b>name</b> is the rest of the text. The attached image becomes the token's logo.</li>
               <li>Reply to any post with the same text to turn that post into a token. Its image is used.</li>
               <li>Eden launches the token and replies to you with its contract address. Replies carry no links, so always check the contract address on Eden before you trade.</li>
-              <li><b>Creator fees go to you.</b> If your X account is linked to an Eden wallet, they go straight to that wallet. If not, they are held for you until you link X on Eden, then move to your wallet.</li>
+              <li><b>Creator fees go to your linked Eden wallet</b> from the first trade: 70% of the trading fee, the same as launching on the site.</li>
               <li>Launching from X costs you nothing; Eden pays the launch. The same limit of 5 launches a month applies, along with spam limits such as a minimum account age and one launch per post.</li>
             </ul>
           </section>

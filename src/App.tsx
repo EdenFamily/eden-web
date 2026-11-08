@@ -51,7 +51,7 @@ function Prelaunch({ path }: { path: string }) {
   const page = path.startsWith("/docs") ? <Docs /> : path.startsWith("/brand") ? <Brand />
     : path.startsWith("/terms") ? <Legal kind="terms" /> : path.startsWith("/privacy") ? <Legal kind="privacy" />
     : path.startsWith("/builders") ? <Builders /> : null;
-  useEffect(() => { scrollTo(0, 0); }, [path]);
+  useEffect(() => { if (!location.hash) scrollTo(0, 0); }, [path]);
   if (!page) return <Waiting />;
   return <><Shell search="" onSearch={() => {}} prelaunch>{page}</Shell><Toast /></>;
 }

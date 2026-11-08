@@ -1,5 +1,6 @@
 import { Link } from "../components/router";
 import { SlimFooter } from "../components/Footer";
+import { XIntro } from "../components/XIntro";
 
 /** Before launch: the full-screen waiting page at "/". Docs, brand kit and the legal pages stay reachable. */
 export function Waiting() {
@@ -13,6 +14,7 @@ export function Waiting() {
         <Link className="btn btn-quiet waiting-docs" to="/docs">Read the docs</Link>
       </main>
       <footer className="waiting-foot"><SlimFooter /></footer>
+      <XIntro prelaunch />
     </div>
   );
 }

@@ -8,6 +8,7 @@ import { api } from "../lib/api";
 import { PlatformMark } from "./Creator";
 import { Copy, toast, useData } from "./ui";
 import { SiteFooter } from "./Footer";
+import { XIntro } from "./XIntro";
 
 /** Before launch only the reading pages are open. */
 const PRELAUNCH_NAV = [
@@ -148,6 +149,7 @@ export function Shell({ children, search, onSearch, prelaunch = false }: { child
       </header>
       <main>{children}</main>
       <footer><SiteFooter prelaunch={prelaunch} /></footer>
+      <XIntro prelaunch={prelaunch} />
       <nav className="mbar" aria-label="Main">
         {nav.map((n) => <Link key={n.to} to={n.to} aria-current={active(n.to) ? "page" : undefined}>{n.icon(20)}{n.label.replace(" a token", "")}</Link>)}
       </nav>

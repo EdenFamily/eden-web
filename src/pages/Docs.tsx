@@ -51,6 +51,11 @@ export function Docs() {
     els.forEach((e) => io.observe(e));
     return () => io.disconnect();
   }, []);
+  // opened as /docs#section (links from the footer, the Launch from X card): jump there once rendered
+  useEffect(() => {
+    const id = location.hash.slice(1);
+    if (id) requestAnimationFrame(() => document.getElementById(id)?.scrollIntoView());
+  }, []);
   const go = (id: string) => (e: React.MouseEvent) => { e.preventDefault(); document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }); history.replaceState(null, "", `#${id}`); };
   return (
     <div className="wrap">

@@ -9,7 +9,7 @@ export function Waiting() {
       <main className="waiting-main">
         <img className="waiting-logo" src="/brand/eden-wordmark.svg?v=w1" alt="Eden" />
         <h1>Every token starts in Eden.</h1>
-        <p>The first launchpad that takes memes from launch to perpetuals. Built on Uniswap, live on Elysium.</p>
+        <p>The launchpad that takes memes from launch to perpetuals. Built on Uniswap, live on Elysium.</p>
         <span className="waiting-date"><i aria-hidden="true" />Opening November 9</span>
         <Link className="btn btn-quiet waiting-docs" to="/docs">Read the docs</Link>
       </main>

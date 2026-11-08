@@ -8,6 +8,8 @@ export type Token = {
   trades_count: number; holders: number; volume_24h_quote: string; trades_24h: number; change_24h: number;
   graduation_progress: number; market_cap_usd: number | null; volume_24h_usd: number | null; price_usd: number | null;
   creator_x: string | null; creator_tiktok: string | null; creator_verified: boolean;
+  /** "x" when the token was launched by tagging @edenfamily on X; creator_x is then the tweeter, `creator` the bot wallet. */
+  launched_via?: "x" | null; launch_tweet_id?: string | null;
   creator_ethos_score: number | null; creator_ethos_level: string | null;
 };
 export type CreatorLinks = { address: string; x?: { handle: string; ethos: { score: number; level: string; profileUrl: string } | null }; tiktok?: { handle: string } };

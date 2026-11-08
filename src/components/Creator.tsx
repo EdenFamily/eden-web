@@ -13,13 +13,25 @@ export function PlatformMark({ platform }: { platform: "x" | "tiktok" }) {
   );
 }
 
-type Source = EthosSource & { creator: string; creator_x?: string | null; creator_tiktok?: string | null; creator_verified?: boolean };
+type Source = EthosSource & { creator: string; creator_x?: string | null; creator_tiktok?: string | null; creator_verified?: boolean; launched_via?: "x" | null; launch_tweet_id?: string | null };
+
+/** The wallet to mark as "Dev": nobody for X launches, where the deployer is only Eden's bot wallet. */
+export const devWallet = (t: Source): string | undefined => (t.launched_via === "x" ? undefined : t.creator.toLowerCase());
 
 /**
  * Who created a token: the creator's verified X or TikTok handle (only for launches inside the 5-per-month quota),
  * otherwise their wallet address. The full form always keeps the wallet, with a copy button.
  */
 export function Creator({ t, compact }: { t: Source; compact?: boolean }) {
+  // Launched from X: the tweeter is the creator (their linked wallet gets the fees); the deployer is only the bot wallet.
+  if (t.launched_via === "x" && t.creator_x) {
+    const tag = <span className="vx">@{t.creator_x}<PlatformMark platform="x" /></span>;
+    if (compact) return tag;
+    return (
+      <span className="creator"><span className="faint">Created by</span><span className="av">{t.creator_x[0]!.toUpperCase()}</span>{tag}<EthosChip t={t} />
+        {t.launch_tweet_id && <><span className="dotsep" /><a className="faint" href={`https://x.com/i/status/${t.launch_tweet_id}`} target="_blank" rel="noreferrer">launched from X ↗</a></>}</span>
+    );
+  }
   const platform = t.creator_verified ? (t.creator_x ? "x" : t.creator_tiktok ? "tiktok" : undefined) : undefined;
   const handle = platform === "x" ? t.creator_x : platform === "tiktok" ? t.creator_tiktok : undefined;
   const name = platform && handle ? <span className="vx">@{handle}<PlatformMark platform={platform} /></span> : null;

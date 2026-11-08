@@ -44,9 +44,12 @@ export function tokenArt(address: string, w: number, h: number): string {
   return url;
 }
 
+/** IPFS gateway for token images (VITE_IPFS_GATEWAY, e.g. a dedicated Pinata gateway); the public one rate-limits. */
+const IPFS_GATEWAY = String(import.meta.env.VITE_IPFS_GATEWAY || "https://ipfs.io").replace(/\/+$/, "");
+
 /** The creator's image when it is a usable URL (https or ipfs), else generated art. */
 export function imageFor(address: string, logo: string, w: number, h: number): string {
-  if (logo.startsWith("ipfs://")) return `https://ipfs.io/ipfs/${logo.slice(7)}`;
+  if (logo.startsWith("ipfs://")) return `${IPFS_GATEWAY}/ipfs/${logo.slice(7)}`;
   if (/^https:\/\//.test(logo)) return logo;
   return tokenArt(address, w, h);
 }

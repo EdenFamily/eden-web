@@ -6,7 +6,7 @@ import { quoteBuy, quoteSell, readCurve, type CurveState } from "../lib/curve";
 import { ago, amount, fromWei, hype, pct, short, usd, usdFull } from "../lib/format";
 import { useLive } from "../lib/live";
 import { send, useWallet } from "../lib/wallet";
-import { Creator } from "../components/Creator";
+import { Creator, devWallet } from "../components/Creator";
 import { I } from "../components/icons";
 import { Link } from "../components/router";
 import { askToConnect } from "../components/Shell";
@@ -172,10 +172,10 @@ export function TokenPage({ address }: { address: string }) {
         <section className="panel tex"><div className="tabs" role="group"><button type="button" aria-pressed={tab === "trades"} onClick={() => setTab("trades")}>Trades</button><button type="button" aria-pressed={tab === "holders"} onClick={() => setTab("holders")}>Holders</button></div>
           <div className="tscroll">{tab === "trades" ? (
             <table><thead><tr className="lbl"><th className="l">Side</th><th className="l">Trader</th><th>HYPE</th><th>${t.symbol}</th><th>Age</th></tr></thead>
-              <tbody>{(trades.data?.trades ?? []).map((x) => <tr key={x.tx_hash + x.log_index}><td className={`l ${x.side === "buy" ? "up" : "down"}`}>{x.side === "buy" ? "Buy" : "Sell"}</td><td className="l">{short(x.signer || x.trader)} {(x.signer || x.trader).toLowerCase() === t.creator.toLowerCase() && <span className="tag tag-dev">Dev</span>}</td><td>{fromWei(x.quote_amount).toFixed(3)}</td><td>{amount(fromWei(x.token_amount))}</td><td className="muted">{ago(x.at)}</td></tr>)}</tbody></table>
+              <tbody>{(trades.data?.trades ?? []).map((x) => <tr key={x.tx_hash + x.log_index}><td className={`l ${x.side === "buy" ? "up" : "down"}`}>{x.side === "buy" ? "Buy" : "Sell"}</td><td className="l">{short(x.signer || x.trader)} {(x.signer || x.trader).toLowerCase() === devWallet(t) && <span className="tag tag-dev">Dev</span>}</td><td>{fromWei(x.quote_amount).toFixed(3)}</td><td>{amount(fromWei(x.token_amount))}</td><td className="muted">{ago(x.at)}</td></tr>)}</tbody></table>
           ) : (
             <table><thead><tr className="lbl"><th className="l">#</th><th className="l">Holder</th><th>Share</th></tr></thead>
-              <tbody>{(holders.data?.holders ?? []).map((h, i) => <tr key={h.holder}><td className="l faint">{i + 1}</td><td className="l">{h.holder === t.curve.toLowerCase() ? "Bonding curve" : short(h.holder)} {h.holder === t.creator.toLowerCase() && <span className="tag tag-dev">Dev</span>}</td><td>{((fromWei(h.amount) / fromWei(t.supply)) * 100).toFixed(2)}%</td></tr>)}</tbody></table>
+              <tbody>{(holders.data?.holders ?? []).map((h, i) => <tr key={h.holder}><td className="l faint">{i + 1}</td><td className="l">{h.holder === t.curve.toLowerCase() ? "Bonding curve" : short(h.holder)} {h.holder === devWallet(t) && <span className="tag tag-dev">Dev</span>}</td><td>{((fromWei(h.amount) / fromWei(t.supply)) * 100).toFixed(2)}%</td></tr>)}</tbody></table>
           )}
           {tab === "trades" && trades.data?.trades.length === 0 && <div className="empty">No trades yet.</div>}</div></section>
         {t.description && <div className="panel tex about"><span className="lbl">About</span><p>{t.description}</p></div>}

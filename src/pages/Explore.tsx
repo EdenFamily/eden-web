@@ -7,6 +7,7 @@ import { I } from "../components/icons";
 import { Link, navigate } from "../components/router";
 import { TokenImage, useData } from "../components/ui";
 import { Creator } from "../components/Creator";
+import { ShareButton } from "../components/Share";
 
 const TABS: Array<{ id: string; label: string; tab: Tab; sort?: string }> = [
   { id: "mcap", label: "Market cap", tab: "trending", sort: "market_cap" },
@@ -37,7 +38,7 @@ export function Explore({ search }: { search: string }) {
   const rail = useRef<HTMLDivElement>(null);
   const live = useLiveStatus();
   const list = useData(() => api.tokens({ tab: tab.tab, sort: tab.sort, q: search.trim() || undefined, limit }), [tab.id, search, limit]);
-  const trending = useData(() => api.tokens({ tab: "trending", sort: "volume_24h", limit: 9 }), []);
+  const trending = useData(() => api.tokens({ tab: "trending", sort: "volume_24h", limit: 8 }), []);
   // Live: refresh at most every 2 s while trades and launches arrive.
   const pending = useRef<ReturnType<typeof setTimeout>>();
   useLive("feed", () => {
@@ -61,12 +62,12 @@ export function Explore({ search }: { search: string }) {
           </div></div>
         <div className="rail" ref={rail}>
           {(trending.data?.tokens ?? []).map((t, i) => (
-            <button key={t.address} className="tc" type="button" onClick={() => navigate(`/token/${t.address}`)}>
-              <div className="tc-art" role="img" aria-label={t.name} style={{ backgroundImage: `url(${imageFor(t.address, t.logo, 640, 360)})`, backgroundSize: "cover" }}><span className="tc-rank">{i + 1}</span></div>
+            <div key={t.address} className="tc"><Link className="tc-link" to={`/token/${t.address}`}>
+              <div className="tc-art" role="img" aria-label={t.name} style={{ backgroundImage: `url(${imageFor(t.address, t.logo, 512, 512)})`, backgroundSize: "cover" }}><span className="tc-rank">{i + 1}</span></div>
               <div className="tc-cap"><span className="tk">${t.symbol}</span><span className="k">Market cap</span>
                 <span className="sub"><Creator t={t} compact /> · <span className={`mono ${t.change_24h >= 0 ? "cap-up" : "cap-down"}`}>{pct(t.change_24h)}</span></span>
                 <span className="v">{usdFull(t.market_cap_usd)}</span></div>
-            </button>
+            </Link><ShareButton t={t} compact className="tc-share" /></div>
           ))}
           {trending.loading && !trending.data && [0, 1, 2].map((i) => <div key={i} className="tc"><div className="tc-art" style={{ background: "var(--raised)" }} /><div className="tc-cap"><span className="skel" /></div></div>)}
         </div>

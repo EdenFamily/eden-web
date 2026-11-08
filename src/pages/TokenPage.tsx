@@ -10,6 +10,7 @@ import { Creator, devWallet } from "../components/Creator";
 import { I } from "../components/icons";
 import { Link } from "../components/router";
 import { askToConnect } from "../components/Shell";
+import { ShareButton } from "../components/Share";
 import { Copy, TokenImage, toast, useData } from "../components/ui";
 
 const INTERVALS = ["1m", "5m", "15m", "1h", "4h", "1d"] as const;
@@ -141,9 +142,10 @@ export function TokenPage({ address }: { address: string }) {
     <div className="wrap">
       <Link className="back" to="/">{I.back()}Explore</Link>
       <div className="thead"><span className="thead-art"><TokenImage address={t.address} logo={t.logo} size={96} label={t.name} /></span>
-        <div><div className="name">{t.name}</div>
+        <div><div className="name">{t.name}{t.phase !== "curve" && <span className="done status-pill"><i />Graduated · Uniswap V4</span>}</div>
           <div className="meta"><span className="mono">${t.symbol} / HYPE</span><span className="dotsep" /><span>{ago(t.launched_at)} ago</span><span className="dotsep" />
             <span className="kv2"><span className="faint">Contract</span><span className="mono">{short(t.address)}</span><Copy value={t.address} label="Copy contract address" /></span>
+            <ShareButton t={t} />
             {t.socials.twitter && <a className="iconbtn sm" href={t.socials.twitter} target="_blank" rel="noreferrer" aria-label={`${t.name} on X`}>{I.x()}</a>}
             {t.socials.telegram && <a className="iconbtn sm" href={t.socials.telegram} target="_blank" rel="noreferrer" aria-label={`${t.name} on Telegram`}>{I.telegram()}</a>}
             {t.socials.website && <a className="iconbtn sm" href={t.socials.website} target="_blank" rel="noreferrer" aria-label={`${t.name} website`}>{I.globe()}</a>}</div>
@@ -156,14 +158,11 @@ export function TokenPage({ address }: { address: string }) {
           <div className="panel tex stat"><span className="lbl">Holders</span><span className="v">{t.holders.toLocaleString()}</span></div>
           <div className="panel tex stat"><span className="lbl">Supply</span><span className="v">{amount(fromWei(t.supply)).replace(".00", "")}</span></div>
         </div>
-        <div className={`panel tex gradcard ${t.phase !== "curve" ? "is-done" : ""}`}>
-          {t.phase !== "curve" ? (<>
-            <div className="box-row"><span className="big">Graduated</span><span className="done"><i />Uniswap V4</span></div><div className="gbar"><span style={{ width: "100%" }} /></div>
-            <div className="gmeta"><span>Liquidity is locked in Uniswap V4.</span></div></>) : (<>
+        {t.phase === "curve" && <div className="panel tex gradcard">
             <div className="box-row"><span><span className="big">{p}%</span> <span className="muted">to graduation</span></span><span className="mono muted">{(threshold - raised).toFixed(1)} HYPE to go</span></div>
             <div className="gbar"><span style={{ width: `${p}%` }} /></div>
-            <div className="gmeta"><span className="mono">{raised.toFixed(1)} / {threshold.toFixed(1)} HYPE</span><span>Graduates at {usd(gradMcap)} into Uniswap V4</span></div></>)}
-        </div>
+            <div className="gmeta"><span className="mono">{raised.toFixed(1)} / {threshold.toFixed(1)} HYPE</span><span>Graduates at {usd(gradMcap)} into Uniswap V4</span></div>
+        </div>}
         <div className="panel tex chart"><div className="chart-top">
           <div className="seg seg-small">{INTERVALS.map((x) => <button key={x} type="button" aria-pressed={x === interval} onClick={() => setIntervalSel(x)}>{x.toUpperCase().replace("M", "m").replace("H", "h")}</button>)}</div>
           <div className="seg seg-small"><button type="button" aria-pressed={unit === "price"} onClick={() => setUnit("price")}>Price</button><button type="button" aria-pressed={unit === "mcap"} onClick={() => setUnit("mcap")}>Mkt cap</button></div></div>
@@ -179,7 +178,21 @@ export function TokenPage({ address }: { address: string }) {
           )}
           {tab === "trades" && trades.data?.trades.length === 0 && <div className="empty">No trades yet.</div>}</div></section>
         {t.description && <div className="panel tex about"><span className="lbl">About</span><p>{t.description}</p></div>}
-      </div><TradePanel t={t} /></div>
+      </div><div className="tside"><TradePanel t={t} /><PerpsFund t={t} /></div></div>
+    </div>
+  );
+}
+
+/** Progress of this token's perps fund, once the server reports it. How it's funded is on /docs#perps. */
+function PerpsFund({ t }: { t: Token }) {
+  if (t.perps_fund_hype == null || !t.perps_fund_target_hype) return null;
+  const have = Number(t.perps_fund_hype), need = Number(t.perps_fund_target_hype), full = have >= need;
+  return (
+    <div className="panel tex perps-fund">
+      <div className="box-row"><span className="lbl">Perps fund</span><span className="pf-pill">{full ? "Funded" : "Building"}</span></div>
+      <div className="pf-amt"><span className="mono">{have.toFixed(1)}</span> <span className="faint mono">/ {need.toFixed(0)} HYPE</span></div>
+      <div className="gbar"><span style={{ width: `${Math.min(100, (have / need) * 100)}%` }} /></div>
+      <p className="muted" style={{ margin: 0, fontSize: 13 }}>Saved from trading fees toward this token's perps listing. <Link to="/docs#perps">How it works</Link></p>
     </div>
   );
 }

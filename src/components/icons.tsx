@@ -17,6 +17,8 @@ export const I = {
   sun: (s = 16) => <svg {...base(s)} strokeWidth={1.8}><circle cx="12" cy="12" r="4" /><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4" /></svg>,
   moon: (s = 16) => <svg {...base(s)} strokeWidth={1.8}><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z" /></svg>,
   wallet: (s = 17) => <svg {...base(s)}><path d="M19 7V5.5A1.5 1.5 0 0 0 17.5 4h-12A2.5 2.5 0 0 0 3 6.5v11A2.5 2.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V15" /><path d="M21 10h-5a2 2 0 0 0 0 4h5z" /></svg>,
+  share: (s = 14) => <svg {...base(s)} strokeWidth={2}><path d="M4 12v8h16v-8M12 3v13M7 8l5-5 5 5" /></svg>,
+  download: (s = 14) => <svg {...base(s)} strokeWidth={2}><path d="M4 16v4h16v-4M12 3v13M7 11l5 5 5-5" /></svg>,
   copy: (s = 12) => <svg {...base(s)} strokeWidth={1.8}><rect x="8" y="8" width="12" height="12" rx="2" /><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3" /></svg>,
   x: (s = 13) => <svg {...base(s)} strokeWidth={1.8}><path d="M4 4h4.5L20 20h-4.5zM19.5 4l-6.6 7.2M4.5 20l6.6-7.2" /></svg>,
   telegram: (s = 13) => <svg {...base(s)} strokeWidth={1.8}><path d="M21 4 3 11l6 2 2 6 3-4 5 4z" /></svg>,

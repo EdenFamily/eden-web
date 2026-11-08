@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { elysium } from "../lib/chain";
 import { CONTRACT_ROWS, DEPLOYMENT_JSON_URL, GRADUATION_HYPE, PHANTOM_HYPE, SOURCE_URL, SUPPLY_SPLIT } from "../lib/deployment";
 import { DEV_SECTIONS, DocsDevelopers } from "./DocsDevelopers";
@@ -57,6 +57,8 @@ export function Docs() {
     els.forEach((e) => io.observe(e));
     return () => io.disconnect();
   }, []);
+  // phones: the contents strip scrolls sideways, so keep the current section's link in view
+  useEffect(() => { document.getElementById(`toc-${active}`)?.scrollIntoView({ block: "nearest", inline: "nearest" }); }, [active]);
   // opened as /docs#section (links from the footer, the Launch from X card): jump there once rendered
   useEffect(() => {
     const id = location.hash.slice(1);
@@ -67,7 +69,9 @@ export function Docs() {
     <div className="wrap">
       <div className="head"><h1>Docs</h1></div>
       <div className="docs-grid">
-        <nav className="toc" aria-label="On this page">{SECTIONS.map(([id, label]) => <a key={id} href={`#${id}`} aria-current={active === id} onClick={go(id)}>{label}</a>)}</nav>
+        <nav className="toc" aria-label="On this page"><span className="toc-group">Guide</span>{SECTIONS.map(([id, label]) => <Fragment key={id}>
+          {id === DEV_SECTIONS[0]?.[0] && <span className="toc-group">Developers</span>}
+          <a href={`#${id}`} id={`toc-${id}`} aria-current={active === id ? "location" : undefined} onClick={go(id)}>{label}{id === "perps" ? <span className="soon">Soon</span> : null}</a></Fragment>)}</nav>
         <article className="doc">
           <section id="overview">
             <h2>What is Eden</h2>

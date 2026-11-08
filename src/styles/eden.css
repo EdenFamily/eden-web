@@ -299,7 +299,7 @@ details summary::-webkit-details-marker { display: none; }
 .toc { position: sticky; top: calc(84px + env(safe-area-inset-top, 0px)); display: flex; flex-direction: column; gap: 2px; }
 .toc a { padding: 6px 10px; border-radius: var(--r); color: var(--muted); font-size: 13px; font-weight: 500; }
 .toc a:hover { color: var(--ink); background: var(--panel); }
-.toc a[aria-current="true"] { color: var(--ink); background: var(--raised); }
+.toc a[aria-current="location"] { color: var(--ink); background: var(--raised); }
 .doc { max-width: 720px; display: flex; flex-direction: column; gap: 56px; }
 .doc section { display: flex; flex-direction: column; gap: 14px; scroll-margin-top: 84px; }
 .doc h2 { font: 600 24px/1.2 var(--sans); letter-spacing: -.02em; text-transform: none; }
@@ -763,3 +763,20 @@ table.dense td { height: 48px; }
 .gate .glyph { width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; background: var(--raised); color: var(--accent); box-shadow: inset 0 0 0 1px var(--rule); }
 .empty .btn { margin-top: 14px; }
 main:focus { outline: none; }
+
+/* Docs contents: grouped; on phones a sticky strip that scrolls sideways instead of an 18-link block */
+.toc-group { padding: 14px 10px 4px; font: 500 10.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--faint); }
+.toc-group:first-child { padding-top: 0; }
+.toc a { display: flex; align-items: center; gap: 8px; }
+.toc a .soon { margin-left: auto; }
+@media (max-width: 960px) {
+  .toc { position: sticky; top: calc(60px + env(safe-area-inset-top, 0px)); z-index: 3; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; gap: 4px; margin: -8px -16px 0; padding: 8px 16px; background: color-mix(in srgb, var(--bg) 94%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--rule); }
+  .toc::-webkit-scrollbar { display: none; }
+  .toc a { flex: none; white-space: nowrap; min-height: 36px; }
+  .toc-group { display: none; }
+  .doc section { scroll-margin-top: 130px; }
+}
+
+/* The wallet sheet title inherited the uppercase mono section-heading style ("CONNECT TO EDEN") */
+.ws-card h2 { text-transform: none; letter-spacing: -.01em; }
+.ws-card { overscroll-behavior: contain; }

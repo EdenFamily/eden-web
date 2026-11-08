@@ -514,6 +514,8 @@ footer { padding-top: 56px; }
 .bd-done { padding: 32px; }
 .bd-done p { margin: 0; }
 
+.doc-code { margin: 0; padding: 14px 16px; background: var(--well); border-radius: var(--r); overflow-x: auto; font: 12.5px/1.6 var(--mono); color: var(--ink); white-space: pre; }
+.doc-code code { font: inherit; }
 .doc-example { padding: 14px 16px; font-size: 15px; color: var(--ink); }
 .doc h2 .soon { margin-left: 8px; vertical-align: middle; }
 
@@ -543,3 +545,4 @@ footer { padding-top: 56px; }
 @media (max-width: 860px) { .xi { bottom: calc(76px + env(safe-area-inset-bottom, 0px)); left: 16px; right: 16px; width: auto; } }
 .waiting .xi { bottom: calc(72px + env(safe-area-inset-bottom, 0px)); }
 @media (max-width: 640px) { .dtable td.addr { word-break: break-all; font-size: 12px; min-width: 0; } }
+.doc p .addr { overflow-wrap: anywhere; }

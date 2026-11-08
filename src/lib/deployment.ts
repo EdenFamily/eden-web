@@ -29,3 +29,25 @@ export const CONTRACT_ROWS: [string, Address][] = [
 /** Launch config 0 on mainnet: the curve's virtual HYPE reserve and the HYPE raised at graduation (71.4% of supply sold). */
 export const PHANTOM_HYPE = 76.0483;
 export const GRADUATION_HYPE = 190.12075;
+
+/** How config 0 splits the supply at graduation (r = graduation ÷ phantom): sold on the curve, seeded into the pool, locked. */
+const R = GRADUATION_HYPE / PHANTOM_HYPE;
+export const SUPPLY_SPLIT = { sold: R / (1 + R), pool: R / (1 + R) ** 2, locked: 1 - R / (1 + R) - R / (1 + R) ** 2 };
+
+/** Public source and machine-readable records. */
+export const SOURCE_URL = "https://github.com/EdenFamily/eden-contracts";
+export const DEPLOYMENT_JSON_URL = "https://github.com/EdenFamily/eden-contracts/blob/main/deployments/elysium-mainnet.json";
+
+/** Full ABIs served from /abi/<file>. The bonding curve and launch token are deployed per launch, so they have no fixed address. */
+export const ABIS: { name: string; file: string; address?: Address }[] = [
+  { name: "Launch factory", file: "EdenLaunchFactory.json", address: MAINNET.factory },
+  { name: "Launch and buy", file: "EdenLaunchAndBuy.json", address: MAINNET.launchAndBuy },
+  { name: "Bonding curve", file: "EdenBondingCurve.json" },
+  { name: "Launch token", file: "EdenLauncherToken.json" },
+  { name: "Fee escrow", file: "EdenFeeEscrow.json", address: MAINNET.feeEscrow },
+  { name: "Uniswap V4 hook", file: "EdenMemeHook.json", address: MAINNET.memeHook },
+  { name: "Liquidity locker", file: "EdenLaunchLocker.json", address: MAINNET.locker },
+  { name: "Buyback vault", file: "EdenBuybackVault.json", address: MAINNET.buybackVault },
+  { name: "Graduation executor", file: "EdenGraduationExecutor.json", address: MAINNET.graduationExecutor },
+  { name: "Launch deployer", file: "EdenLaunchDeployer.json", address: MAINNET.launchDeployer },
+];

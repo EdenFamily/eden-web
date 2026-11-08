@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
 import { elysium } from "../lib/chain";
-import { CONTRACT_ROWS, GRADUATION_HYPE, PHANTOM_HYPE } from "../lib/deployment";
+import { CONTRACT_ROWS, DEPLOYMENT_JSON_URL, GRADUATION_HYPE, PHANTOM_HYPE, SOURCE_URL, SUPPLY_SPLIT } from "../lib/deployment";
+import { DEV_SECTIONS, DocsDevelopers } from "./DocsDevelopers";
 import { Link } from "../components/router";
+
+const pct = (v: number) => (v * 100).toFixed(1) + "%";
 
 const SECTIONS = [
   ["overview", "What is Eden"],
@@ -15,6 +18,7 @@ const SECTIONS = [
   ["referrals", "Referrals"],
   ["network", "Network and contracts"],
   ["risks", "Risks"],
+  ...DEV_SECTIONS,
 ] as const;
 
 /** Market cap (in HYPE) against HYPE raised on a fresh curve: 76.05 HYPE virtual reserve, graduation at 190.12 HYPE. */
@@ -80,12 +84,23 @@ export function Docs() {
             <h2>How a launch works</h2>
             <p>Every token starts on its own <b>bonding curve</b>: a contract that sells and buys the token at a price set by a formula, so there is always a price and always liquidity. Each buy raises the price; each sell lowers it.</p>
             <CurveFigure />
-            <p>The curve starts with a virtual reserve of 76.05 HYPE against the full supply, so the first buyers pay the lowest price. When 190.12 HYPE has been raised, 71.4% of the supply has been sold and the token graduates.</p>
+            <p>The curve starts with a virtual reserve of {PHANTOM_HYPE.toFixed(2)} HYPE against the full supply, so the first buyers pay the lowest price. When {GRADUATION_HYPE.toFixed(2)} HYPE has been raised, {pct(SUPPLY_SPLIT.sold)} of the supply has been sold and the token graduates.</p>
           </section>
 
           <section id="graduation">
             <h2>Graduation</h2>
-            <p>At graduation the curve closes and its HYPE and the remaining tokens move into a <b>Uniswap V4 pool</b> at the same price, so there is no jump. That liquidity is <b>locked forever</b>: nobody, including the creator and Eden, can remove it.</p>
+            <p>At graduation the curve closes. Its {GRADUATION_HYPE.toFixed(2)} HYPE and {pct(SUPPLY_SPLIT.pool)} of the supply seed a <b>Uniswap V4 pool</b> at the curve's final price, so there is no jump. The remaining {pct(SUPPLY_SPLIT.locked)} of the supply can't be paired at that price and is locked with the liquidity.</p>
+            <p>The pool's liquidity and the {pct(SUPPLY_SPLIT.locked)} are <b>locked forever</b>: nobody, including the creator and Eden, can remove them.</p>
+            <div className="panel tex tscroll">
+              <table className="dtable">
+                <thead><tr><th>Supply at graduation</th><th>Share</th></tr></thead>
+                <tbody>
+                  <tr><td>Sold on the curve</td><td className="mono">{pct(SUPPLY_SPLIT.sold)}</td></tr>
+                  <tr><td>Seeded into the Uniswap V4 pool</td><td className="mono">{pct(SUPPLY_SPLIT.pool)}</td></tr>
+                  <tr><td>Locked forever</td><td className="mono">{pct(SUPPLY_SPLIT.locked)}</td></tr>
+                </tbody>
+              </table>
+            </div>
             <p>Graduation lands at a market cap of about 932 HYPE, about $72K at today's HYPE price. Eden may retune the curve for new launches as HYPE's price moves; tokens already trading keep the curve they launched with.</p>
           </section>
 
@@ -107,7 +122,7 @@ export function Docs() {
 
           <section id="protection">
             <h2>Launch protection</h2>
-            <p>Bots that buy in the first second pay a <b>snipe tax</b>: 99% at the moment of launch, falling to zero within seconds. The creator's initial buy and up to 31 bundle wallets the creator lists are exempt, so a team can buy at launch without being sniped.</p>
+            <p>Bots that buy right after launch pay a <b>snipe tax</b>: 99% at the moment of launch, falling to zero over 15 seconds. The creator's initial buy and up to 31 bundle wallets the creator lists are exempt, so a team can buy at launch without being sniped.</p>
             <p>Every swap is checked against a minimum you set through slippage (1% by default). If the price moves further than that before your trade lands, the trade does not happen and you only pay gas.</p>
           </section>
 
@@ -155,6 +170,9 @@ export function Docs() {
                   <tr><td>Chain ID</td><td className="mono">{elysium.id}</td></tr>
                   <tr><td>Gas token</td><td>HYPE</td></tr>
                   {CONTRACT_ROWS.map(([name, address]) => <tr key={address}><td>{name}</td><td className="mono addr">{address}</td></tr>)}
+                  <tr><td>Source code</td><td><a href={SOURCE_URL} target="_blank" rel="noreferrer">github.com/EdenFamily/eden-contracts</a></td></tr>
+                  <tr><td>Deployment record</td><td><a href={DEPLOYMENT_JSON_URL} target="_blank" rel="noreferrer">elysium-mainnet.json</a></td></tr>
+                  <tr><td>ABIs</td><td><a href="#abis">Download</a></td></tr>
                 </tbody>
               </table>
             </div>
@@ -171,6 +189,8 @@ export function Docs() {
               <li>Nothing on Eden is financial advice.</li>
             </ul>
           </section>
+
+          <DocsDevelopers />
         </article>
       </div>
     </div>

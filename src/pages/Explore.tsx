@@ -50,7 +50,7 @@ export function Explore({ search }: { search: string }) {
     <div className="wrap">
       <section className="hero" aria-label="Eden">
         <h1>Every token starts in Eden.</h1>
-        <p>Launch a token in one transaction. It trades from the first second and graduates at about $72K into a locked Uniswap pool on Elysium.</p>
+        <p>The first launchpad that takes memes from launch to perpetuals. Built on Uniswap, live on Elysium.</p>
         <Link className="btn btn-launch" to="/create">{I.plus()}Launch a token</Link>
       </section>
       <section className="sec" aria-label="Trending">

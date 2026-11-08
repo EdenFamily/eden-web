@@ -2,6 +2,7 @@ import { Fragment, useEffect, useState } from "react";
 import { elysium } from "../lib/chain";
 import { CONTRACT_ROWS, DEPLOYMENT_JSON_URL, GRADUATION_HYPE, PHANTOM_HYPE, SOURCE_URL, SUPPLY_SPLIT } from "../lib/deployment";
 import { DEV_SECTIONS, DocsDevelopers } from "./DocsDevelopers";
+import { AGENT_SECTIONS, DocsAgents } from "./DocsAgents";
 import { useGraduationMcapLabel, useHypeUsd } from "../lib/graduation";
 import { Link } from "../components/router";
 
@@ -21,6 +22,7 @@ const SECTIONS = [
   ["network", "Network and contracts"],
   ["risks", "Risks"],
   ...DEV_SECTIONS,
+  ...AGENT_SECTIONS,
 ] as const;
 
 /** Market cap in USD (at today's HYPE price) against HYPE raised on a fresh curve, launch config 0. */
@@ -77,6 +79,7 @@ export function Docs() {
       <div className="docs-grid">
         <nav className="toc" aria-label="On this page"><span className="toc-group">Guide</span>{SECTIONS.map(([id, label]) => <Fragment key={id}>
           {id === DEV_SECTIONS[0]?.[0] && <span className="toc-group">Developers</span>}
+          {id === AGENT_SECTIONS[0][0] && <span className="toc-group">Agents</span>}
           <a href={`#${id}`} id={`toc-${id}`} aria-current={active === id ? "location" : undefined} onClick={go(id)}>{label}{id === "perps" ? <span className="soon">Soon</span> : null}</a></Fragment>)}</nav>
         <article className="doc">
           <section id="overview">
@@ -214,6 +217,7 @@ export function Docs() {
           </section>
 
           <DocsDevelopers />
+          <DocsAgents />
         </article>
       </div>
     </div>

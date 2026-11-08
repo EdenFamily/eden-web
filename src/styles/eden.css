@@ -824,3 +824,10 @@ main:focus { outline: none; }
 .api-example { max-height: 320px; overflow: auto; }
 .api-skel { display: flex; flex-direction: column; gap: 8px; }
 @media (max-width: 640px) { .api-op summary { grid-template-columns: 50px minmax(0, 1fr); } .api-sum { grid-column: 1 / -1; white-space: normal; } .api-params { display: block; overflow-x: auto; } }
+
+/* docs: agents */
+.agent-line { display: flex; align-items: flex-start; gap: 8px; }
+.agent-line .mono { font-size: 12.5px; overflow-wrap: anywhere; }
+.agent-prompts { list-style: none; padding-left: 0; }
+.agent-prompts li { padding: 6px 10px; border-left: 2px solid var(--rule-2); }
+@media (max-width: 640px) { .agent-skills thead { display: none; } .agent-skills tr { display: grid; gap: 6px; padding: 10px 0; } .agent-skills td { border: 0; padding: 0 12px; } }

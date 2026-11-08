@@ -1,5 +1,6 @@
 import type { Address } from "viem";
 import { curveAbi, publicClient } from "./chain";
+import { PHANTOM_HYPE } from "./deployment";
 
 /** Live curve state read from the chain for exact quotes (constant product over the curve's quote and token reserves). */
 export type CurveState = { quote: bigint; tokens: bigint; feeBps: bigint; taxBps: bigint };
@@ -31,8 +32,8 @@ export function quoteSell(s: CurveState, tokensIn: bigint): { out: bigint; impac
   return { out, impactBps: Math.max(0, Math.round((1 - exec / spot) * 10_000)) };
 }
 
-/** Share of supply an initial buy of `hypeIn` gets on a fresh curve (75 HYPE virtual reserve, 1B supply). */
-export function initialBuyShare(hypeIn: number, feeBps = 100, taxBps = 0, phantom = 75): number {
+/** Share of supply an initial buy of `hypeIn` gets on a fresh curve (launch config 0 virtual reserve, 1B supply). */
+export function initialBuyShare(hypeIn: number, feeBps = 100, taxBps = 0, phantom = PHANTOM_HYPE): number {
   const net = hypeIn * (1 - (feeBps + taxBps) / 10_000);
   return net > 0 ? 1 - phantom / (phantom + net) : 0;
 }

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { contracts, elysium } from "../lib/chain";
+import { elysium } from "../lib/chain";
+import { CONTRACT_ROWS, GRADUATION_HYPE, PHANTOM_HYPE } from "../lib/deployment";
 import { Link } from "../components/router";
 
 const SECTIONS = [
@@ -16,24 +17,24 @@ const SECTIONS = [
   ["risks", "Risks"],
 ] as const;
 
-/** Market cap (in HYPE) against HYPE raised on a fresh curve: 75 HYPE virtual reserve, graduation at 187.5 HYPE. */
+/** Market cap (in HYPE) against HYPE raised on a fresh curve: 76.05 HYPE virtual reserve, graduation at 190.12 HYPE. */
 function CurveFigure() {
-  const W = 640, H = 220, pl = 52, pb = 30, pt = 14, pr = 120, phantom = 75, grad = 187.5;
+  const W = 640, H = 220, pl = 52, pb = 30, pt = 14, pr = 120, phantom = PHANTOM_HYPE, grad = GRADUATION_HYPE;
   const mcap = (raised: number) => (phantom + raised) ** 2 / phantom;
   const maxY = mcap(grad) * 1.08;
   const x = (r: number) => pl + (r / grad) * (W - pl - pr), y = (m: number) => pt + (1 - m / maxY) * (H - pt - pb);
   const pts = Array.from({ length: 61 }, (_, i) => (i / 60) * grad).map((r) => `${x(r)},${y(mcap(r))}`).join(" ");
   return (
     <figure className="panel tex curve-fig" style={{ margin: 0 }}>
-      <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Market cap rises from 75 to about 919 HYPE as 187.5 HYPE is raised">
+      <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Market cap rises from 76 to about 932 HYPE as 190.1 HYPE is raised">
         {[0, 250, 500, 750].map((m) => <g key={m}><line x1={pl} x2={x(grad)} y1={y(m)} y2={y(m)} stroke="var(--rule)" /><text x={pl - 8} y={y(m) + 4} textAnchor="end" fill="var(--faint)" fontSize="11" fontFamily="var(--mono)">{m}</text></g>)}
-        {[0, 50, 100, 150, 187.5].map((r) => <text key={r} x={x(r)} y={H - 10} textAnchor="middle" fill="var(--faint)" fontSize="11" fontFamily="var(--mono)">{r}</text>)}
+        {[0, 50, 100, 150, 190.1].map((r) => <text key={r} x={x(r)} y={H - 10} textAnchor="middle" fill="var(--faint)" fontSize="11" fontFamily="var(--mono)">{r}</text>)}
         <polyline points={pts} fill="none" stroke="var(--accent)" strokeWidth="2" />
         <line x1={x(grad)} x2={x(grad)} y1={pt} y2={H - pb} stroke="var(--gold)" strokeDasharray="4 4" />
         <circle cx={x(grad)} cy={y(mcap(grad))} r="4" fill="var(--gold)" />
-        <text x={x(grad) + 10} y={y(mcap(grad)) + 4} fill="var(--gold)" fontSize="11" fontFamily="var(--mono)">graduates</text><text x={x(grad) + 10} y={y(mcap(grad)) + 18} fill="var(--gold)" fontSize="11" fontFamily="var(--mono)">≈919 HYPE</text>
+        <text x={x(grad) + 10} y={y(mcap(grad)) + 4} fill="var(--gold)" fontSize="11" fontFamily="var(--mono)">graduates</text><text x={x(grad) + 10} y={y(mcap(grad)) + 18} fill="var(--gold)" fontSize="11" fontFamily="var(--mono)">≈932 HYPE</text>
         <circle cx={x(0)} cy={y(mcap(0))} r="4" fill="var(--accent)" />
-        <text x={x(0) + 10} y={y(mcap(0)) + 18} fill="var(--muted)" fontSize="11" fontFamily="var(--mono)">starts at 75 HYPE</text>
+        <text x={x(0) + 10} y={y(mcap(0)) + 18} fill="var(--muted)" fontSize="11" fontFamily="var(--mono)">starts at 76 HYPE</text>
       </svg>
       <figcaption className="note" style={{ marginTop: 8 }}>Market cap in HYPE (vertical) against HYPE raised on the curve (horizontal).</figcaption>
     </figure>
@@ -69,7 +70,7 @@ export function Docs() {
             <div className="facts">
               <div className="panel tex fact"><span className="lbl">Supply</span><span className="v">1B</span></div>
               <div className="panel tex fact"><span className="lbl">Paired with</span><span className="v">HYPE</span></div>
-              <div className="panel tex fact"><span className="lbl">Graduates at</span><span className="v">187.5 HYPE</span></div>
+              <div className="panel tex fact"><span className="lbl">Graduates at</span><span className="v">≈$72K</span></div>
               <div className="panel tex fact"><span className="lbl">Launch fee</span><span className="v">0.0005 HYPE</span></div>
             </div>
             <p>Eden is a non-custodial interface. Your wallet signs every transaction, Eden never holds your funds, and every token is created by its creator, not by Eden.</p>
@@ -79,13 +80,13 @@ export function Docs() {
             <h2>How a launch works</h2>
             <p>Every token starts on its own <b>bonding curve</b>: a contract that sells and buys the token at a price set by a formula, so there is always a price and always liquidity. Each buy raises the price; each sell lowers it.</p>
             <CurveFigure />
-            <p>The curve starts with a virtual reserve of 75 HYPE against the full supply, so the first buyers pay the lowest price. When 187.5 HYPE has been raised, about 71% of the supply has been sold and the token graduates.</p>
+            <p>The curve starts with a virtual reserve of 76.05 HYPE against the full supply, so the first buyers pay the lowest price. When 190.12 HYPE has been raised, 71.4% of the supply has been sold and the token graduates.</p>
           </section>
 
           <section id="graduation">
             <h2>Graduation</h2>
             <p>At graduation the curve closes and its HYPE and the remaining tokens move into a <b>Uniswap V4 pool</b> at the same price, so there is no jump. That liquidity is <b>locked forever</b>: nobody, including the creator and Eden, can remove it.</p>
-            <p>Graduation lands at a market cap of about $72K. Eden adjusts the curve for new launches once a day so this stays near $72K whatever HYPE's price does; tokens already trading keep the curve they launched with.</p>
+            <p>Graduation lands at a market cap of about 932 HYPE, about $72K at today's HYPE price. Eden may retune the curve for new launches as HYPE's price moves; tokens already trading keep the curve they launched with.</p>
           </section>
 
           <section id="fees">
@@ -153,9 +154,7 @@ export function Docs() {
                   <tr><td>Network</td><td>Elysium</td></tr>
                   <tr><td>Chain ID</td><td className="mono">{elysium.id}</td></tr>
                   <tr><td>Gas token</td><td>HYPE</td></tr>
-                  <tr><td>Launch factory</td><td className="mono">{contracts.factory || "Published at launch"}</td></tr>
-                  <tr><td>Launch and buy</td><td className="mono">{contracts.launchAndBuy || "Published at launch"}</td></tr>
-                  <tr><td>Fee escrow</td><td className="mono">{contracts.feeEscrow || "Published at launch"}</td></tr>
+                  {CONTRACT_ROWS.map(([name, address]) => <tr key={address}><td>{name}</td><td className="mono addr">{address}</td></tr>)}
                 </tbody>
               </table>
             </div>

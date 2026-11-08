@@ -109,7 +109,7 @@ export function Brand() {
         <div className="bk-grid three">
           <div className="panel bk-type"><span className="lbl">Wordmark · Syncopate Bold, drawn</span><span className="t-mark">EDEN</span></div>
           <div className="panel bk-type"><span className="lbl">Text · Geist</span><span className="t-sans">Every token starts in Eden.</span></div>
-          <div className="panel bk-type"><span className="lbl">Numbers · Geist Mono</span><span className="t-mono">$72,140 · 187.5 HYPE</span></div>
+          <div className="panel bk-type"><span className="lbl">Numbers · Geist Mono</span><span className="t-mono">$72,140 · 190.12 HYPE</span></div>
         </div>
       </section>
 

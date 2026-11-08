@@ -8,6 +8,7 @@ import { navigate } from "../components/router";
 import { askToConnect } from "../components/Shell";
 import { toast, useData } from "../components/ui";
 import { api } from "../lib/api";
+import { GRADUATION_HYPE } from "../lib/deployment";
 
 const FEES = [0, 1, 2, 3, 5, 10];
 const ZERO32 = ("0x" + "0".repeat(64)) as Hex;
@@ -128,7 +129,7 @@ export function Create() {
             <div><div style={{ font: "600 18px var(--sans)" }}>{f.name || "Your token"}</div><div className="mono muted">${f.ticker || "TICKER"} · HYPE pair</div>
               {w.address && <div className="muted" style={{ fontSize: 13, marginTop: 4 }}>by <span className="mono">{short(w.address)}</span></div>}</div></div>
           <p className="muted" style={{ margin: 0 }}>{f.description || "A line or two about the token goes here."}</p>
-          <dl><div><dt>Supply</dt><dd>1,000,000,000</dd></div><div><dt>Graduates at</dt><dd>187.5 HYPE</dd></div><div><dt>Creator fee</dt><dd>{fee}%</dd></div><div><dt>Launch fee</dt><dd>0.0005 HYPE</dd></div></dl>
+          <dl><div><dt>Supply</dt><dd>1,000,000,000</dd></div><div><dt>Graduates at</dt><dd>{GRADUATION_HYPE.toFixed(2)} HYPE</dd></div><div><dt>Creator fee</dt><dd>{fee}%</dd></div><div><dt>Launch fee</dt><dd>0.0005 HYPE</dd></div></dl>
         </aside>
       </div>
     </div>

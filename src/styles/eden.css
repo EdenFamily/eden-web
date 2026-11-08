@@ -538,3 +538,4 @@ footer { padding-top: 56px; }
 @media (prefers-reduced-motion: reduce) { .xi { animation: none; } }
 @media (max-width: 860px) { .xi { bottom: calc(76px + env(safe-area-inset-bottom, 0px)); left: 16px; right: 16px; width: auto; } }
 .waiting .xi { bottom: calc(72px + env(safe-area-inset-bottom, 0px)); }
+@media (max-width: 640px) { .dtable td.addr { word-break: break-all; font-size: 12px; min-width: 0; } }

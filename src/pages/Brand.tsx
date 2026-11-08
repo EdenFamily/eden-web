@@ -2,7 +2,7 @@ import { Copy } from "../components/ui";
 
 const B = "/brand/";
 /** Bumped when the brand files change: Cloudflare caches them by URL. */
-const V = "?v=w1";
+const V = "?v=w2";
 type Asset = { file: string; label: string };
 
 const SYMBOLS: Array<Asset & { ground: "dark" | "light" }> = [
@@ -19,16 +19,19 @@ const WORDMARKS: Array<Asset & { ground: "dark" | "light" | "check" }> = [
   { file: "wordmark-transparent.png", label: "Transparent", ground: "check" },
 ];
 const COLOURS = [
-  { name: "Deep space", hex: "#04181C", note: "Grounds, the orb" },
+  { name: "Deep space", hex: "#04181C", note: "Logo grounds, avatars, the banner sky" },
   { name: "Eden teal", hex: "#061A1E", note: "Site background" },
-  { name: "Mint", hex: "#97FCE4", note: "The bar, highlights" },
-  { name: "Elysium teal", hex: "#5BB2CB", note: "End of the gradient" },
-  { name: "First light", hex: "#FFD36B", note: "The dawn point, graduation" },
-  { name: "Mist", hex: "#EAF1F3", note: "Text on dark" },
+  { name: "Mist", hex: "#EAF1F3", note: "Text and the DEN of the wordmark" },
+  { name: "Signal mint", hex: "#7CF0CC", note: "Buttons and links on the site" },
+  { name: "First light", hex: "#FFD36B", note: "Top of the E, the dawn point" },
+  { name: "Dawn mint", hex: "#BFF5D6", note: "E gradient, 38%" },
+  { name: "Mint", hex: "#97FCE4", note: "E gradient, 62%" },
+  { name: "Lagoon", hex: "#4FB8CF", note: "Bottom of the E" },
 ];
 const SOCIAL: Array<Asset & { size: string }> = [
-  { file: "x-banner-1500x500.png", label: "X banner", size: "1500 × 500" },
-  { file: "x-avatar-400.png", label: "Profile picture", size: "400 × 400" },
+  { file: "x-banner-3000x1000.png", label: "X banner", size: "3000 × 1000" },
+  { file: "x-avatar-E-800.png", label: "Profile picture, E", size: "800 × 800" },
+  { file: "x-avatar-EDEN-800.png", label: "Profile picture, EDEN", size: "800 × 800" },
   { file: "token-eden-512.png", label: "Token logo", size: "512 × 512" },
   { file: "app-icon-1024.png", label: "App icon", size: "1024 × 1024" },
 ];
@@ -77,10 +80,10 @@ export function Brand() {
       <section className="bk-sec" aria-labelledby="bk-social">
         <div className="sec-row"><h2 id="bk-social">Social and token</h2></div>
         <figure className="bk-tile">
-          <div className="bk-ground banner"><img src={B + SOCIAL[0]!.file + V} alt="Eden X banner: the wordmark over a planet at first sunrise" /></div>
+          <div className="bk-ground banner"><img src={B + SOCIAL[0]!.file + V} alt="Eden X banner: the wordmark over a planet at first sunrise, Built on Elysium" /></div>
           <figcaption><span>{SOCIAL[0]!.label} <span className="faint mono">{SOCIAL[0]!.size}</span></span><Download {...SOCIAL[0]!} /></figcaption>
         </figure>
-        <div className="bk-grid three">
+        <div className="bk-grid four">
           {SOCIAL.slice(1).map((s) => (
             <figure key={s.file} className="bk-tile">
               <div className="bk-ground dark"><img className={s.file.startsWith("x-") || s.file.startsWith("token") ? "round" : "rounded"} src={B + s.file + V} alt={`Eden ${s.label.toLowerCase()}`} /></div>
@@ -92,7 +95,7 @@ export function Brand() {
 
       <section className="bk-sec" aria-labelledby="bk-colour">
         <div className="sec-row"><h2 id="bk-colour">Colour</h2></div>
-        <div className="bk-grid six">
+        <div className="bk-grid four">
           {COLOURS.map((c) => (
             <div key={c.hex} className="panel bk-swatch">
               <div className="chip-c" style={{ background: c.hex }} />
@@ -101,7 +104,7 @@ export function Brand() {
             </div>
           ))}
         </div>
-        <div className="panel bk-gradient"><span className="lbl">Light gradient</span><div className="bar" /><span className="mono muted">#FFD36B → #97FCE4 → #5BB2CB</span></div>
+        <div className="panel bk-gradient"><span className="lbl">Light gradient</span><div className="bar" /><span className="mono muted">#FFD36B → #BFF5D6 38% → #97FCE4 62% → #4FB8CF, top to bottom</span></div>
       </section>
 
       <section className="bk-sec" aria-labelledby="bk-type">

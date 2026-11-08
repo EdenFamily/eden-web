@@ -31,7 +31,7 @@ export const I = {
 /** Eden's logo: the EDEN wordmark (theme-aware), or the E on the dark orb for square spots. */
 export function Mark({ size = 20, kind = "word" }: { size?: number; kind?: "word" | "icon" }) {
   if (kind === "icon") return <img className="mark" src="/brand/eden-icon.svg" width={size} height={size} alt="" />;
-  const width = Math.round(size * 4.56);
+  const width = Math.round(size * 4.39);
   return <>
     <img className="mark on-dark" src="/brand/eden-wordmark.svg" width={width} height={size} alt="Eden" />
     <img className="mark on-light" src="/brand/eden-wordmark-onlight.svg" width={width} height={size} alt="Eden" />

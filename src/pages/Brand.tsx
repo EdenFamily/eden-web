@@ -43,7 +43,7 @@ export function Brand() {
 
       <section className="panel brand-hero" aria-label="Logo">
         <div className="brand-lock"><img className="on-dark-only" src={B + "eden-wordmark.svg"} alt="Eden" /><img className="on-light-only" src={B + "eden-wordmark-onlight.svg"} alt="Eden" /></div>
-        <p>EDEN in Michroma, drawn as outlines. The first E carries first light: the dawn gradient and a gold point where the sunrise breaks.</p>
+        <p>EDEN in wide, solid capitals. The first E carries first light: the dawn gradient and a gold point where the sunrise breaks.</p>
       </section>
 
       <section className="bk-sec" aria-labelledby="bk-symbol">
@@ -105,7 +105,7 @@ export function Brand() {
       <section className="bk-sec" aria-labelledby="bk-type">
         <div className="sec-row"><h2 id="bk-type">Type</h2></div>
         <div className="bk-grid three">
-          <div className="panel bk-type"><span className="lbl">Wordmark · Michroma</span><span className="t-mark">EDEN</span></div>
+          <div className="panel bk-type"><span className="lbl">Wordmark · Syncopate Bold, drawn</span><span className="t-mark">EDEN</span></div>
           <div className="panel bk-type"><span className="lbl">Text · Geist</span><span className="t-sans">Every token starts in Eden.</span></div>
           <div className="panel bk-type"><span className="lbl">Numbers · Geist Mono</span><span className="t-mono">$72,140 · 187.5 HYPE</span></div>
         </div>

@@ -144,8 +144,8 @@ export function Docs() {
 
           <section id="x-launch">
             <h2>Launch from X <span className="soon">Soon</span></h2>
-            <p>Launch a token without opening Eden: post on X and tag <b>@edenfamily</b> with a ticker and a name, and attach an image. First link your X account to your Eden wallet from the wallet menu; launches from X accounts that aren't linked are not made.</p>
-            <div className="panel tex doc-example"><span className="mono">@edenfamily $FROG Frog</span></div>
+            <p>Launch a token without opening Eden: post on X and tag <b>@EdenOnElysium</b> with a ticker and a name, and attach an image. First link your X account to your Eden wallet from the wallet menu; launches from X accounts that aren't linked are not made.</p>
+            <div className="panel tex doc-example"><span className="mono">@EdenOnElysium $FROG Frog</span></div>
             <ul>
               <li><b>Ticker</b> is the word after <span className="mono">$</span> (1–10 letters or digits); <b>name</b> is the rest of the text (up to 32 characters). The attached image becomes the token's logo; a post without an image doesn't launch.</li>
               <li>Reply to any post with the same text to turn that post into a token. Its image is used, and <b>you</b> are the token's creator, not the person who wrote the post. A token made from someone's post is not endorsed by them.</li>

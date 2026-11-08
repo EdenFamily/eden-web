@@ -4,6 +4,7 @@ import { signMessage, useWallet } from "../lib/wallet";
 import { navigate } from "../components/router";
 import { askToConnect } from "../components/Shell";
 import { toast } from "../components/ui";
+import { I } from "../components/icons";
 
 const ERRORS: Record<string, string> = {
   state: "Linking timed out. Start again from the wallet menu.",
@@ -22,7 +23,7 @@ export function LinkResult() {
     linkError ? { text: ERRORS[linkError] ?? ERRORS.failed!, tone: "err" } : { text: "Checking the link…", tone: "info" });
   useEffect(() => {
     if (!offer || linkError) return;
-    if (!w.address) { setState({ text: "Sign in with the wallet you started from to finish linking.", tone: "info" }); return; }
+    if (!w.address) { setState({ text: "Connect the wallet you started from to finish linking.", tone: "info" }); return; }
     let done = false;
     void (async () => {
       try {
@@ -43,10 +44,18 @@ export function LinkResult() {
   return (
     <div className="wrap">
       <div className="head"><h1>Link account</h1></div>
-      <div className="panel tex empty" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>
-        <p className={state.tone === "err" ? "err" : ""} style={{ margin: 0, fontSize: 15, color: state.tone === "ok" ? "var(--accent)" : undefined }}>{state.text}</p>
-        {!w.address && !linkError ? <button className="btn btn-primary" type="button" onClick={(e) => { e.stopPropagation(); askToConnect(); }}>Sign in</button>
-          : <button className="btn btn-quiet" type="button" onClick={() => navigate("/")}>Back to Explore</button>}
+      <div className="panel tex state" aria-live="polite">
+        <span className="glyph" aria-hidden="true" style={state.tone === "ok" ? { color: "var(--accent)" } : state.tone === "err" ? { color: "var(--down)" } : undefined}>
+          {state.tone === "ok" ? <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 5 5 9-10" /></svg>
+            : state.tone === "err" ? <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M12 7v6M12 17h.01" /><circle cx="12" cy="12" r="9" /></svg>
+            : !offer ? I.x(20) : <span className="ws-spin" />}</span>
+        <h2>{state.tone === "ok" ? "Account linked" : state.tone === "err" ? "Not linked" : !offer ? "Link your X account" : "Linking your account"}</h2>
+        <p>{!offer && !linkError ? "Connect your wallet, open the wallet menu (your address, top right) and choose Link X. You'll come back here to sign once." : state.text}</p>
+        <div className="row">
+          {!w.address && !linkError ? <button className="btn btn-primary" type="button" onClick={(e) => { e.stopPropagation(); askToConnect(); }}>{I.wallet(16)}Connect wallet</button>
+            : state.tone === "err" ? <><button className="btn btn-primary" type="button" onClick={(e) => { e.stopPropagation(); askToConnect(); }}>Open the wallet menu</button><button className="btn btn-quiet" type="button" onClick={() => navigate("/")}>Back to Explore</button></>
+            : <button className="btn btn-quiet" type="button" onClick={() => navigate("/")}>Back to Explore</button>}
+        </div>
       </div>
     </div>
   );

@@ -15,6 +15,7 @@ import { LinkResult } from "./pages/LinkResult";
 import { Legal } from "./pages/Legal";
 import { Waiting } from "./pages/Waiting";
 import { Builders } from "./pages/Builders";
+import { NotFound } from "./pages/NotFound";
 
 /** Before mainnet launch: "/" is the waiting page; only docs, brand kit and the legal pages are open. */
 export const PRELAUNCH = import.meta.env.VITE_PRELAUNCH === "1";
@@ -71,6 +72,7 @@ function Live({ path }: { path: string }) {
     : path.startsWith("/terms") ? <Legal kind="terms" />
     : path.startsWith("/privacy") ? <Legal kind="privacy" />
     : path.startsWith("/builders") ? <Builders />
-    : <Explore search={search} />;
+    : path === "/" || path === "/index.html" ? <Explore search={search} />
+    : <NotFound />;
   return <><Shell search={search} onSearch={setSearch}>{page}</Shell><Toast /></>;
 }

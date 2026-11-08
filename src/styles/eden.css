@@ -473,6 +473,8 @@ footer { padding-top: 56px; }
 .waiting-date i { width: 7px; height: 7px; border-radius: 50%; background: #ffd36b; box-shadow: 0 0 12px #ffd36b; }
 .waiting-docs { background: rgba(4,24,28,.6); color: #eaf1f3; border-color: rgba(234,241,243,.22); }
 .waiting-foot { padding: 18px 0 22px; }
+/* The waiting page has no sidebar: undo the shell's main/footer sidebar offset so it centers in the viewport. */
+.waiting .waiting-main, .waiting .waiting-foot { margin-left: 0; border-top: 0; }
 .slim-row { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; gap: 12px 24px; flex-wrap: wrap; }
 .slim-row .slim-foot { justify-content: flex-start; }
 @media (max-width: 760px) { .slim-row, .slim-row .slim-foot { justify-content: center; } }

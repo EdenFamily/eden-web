@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { api, type Tab, type Token } from "../lib/api";
 import { imageFor } from "../lib/art";
-import { ago, fromWei, pct, usd, usdFull } from "../lib/format";
+import { ago, amount, fromWei, pct, usd, usdFull } from "../lib/format";
 import { useLive, useLiveStatus } from "../lib/live";
 import { I } from "../components/icons";
 import { Link, navigate } from "../components/router";
@@ -56,10 +56,10 @@ export function Explore({ search }: { search: string }) {
         <div className="hero-cta"><Link className="btn btn-launch" to="/create">{I.plus()}Launch a token</Link><FollowX className="btn btn-quiet hero-x" /></div>
       </section>
       <section className="sec" aria-label="Trending">
-        <div className="sec-row"><h2>Trending</h2>
+        <div className="sec-row"><h2>Trending<span className="sub">by 24h volume</span></h2>
           <div className="arrows">
-            <button className="iconbtn" type="button" aria-label="Previous" onClick={() => rail.current?.scrollBy({ left: -620, behavior: "smooth" })}>{I.back()}</button>
-            <button className="iconbtn" type="button" aria-label="Next" onClick={() => rail.current?.scrollBy({ left: 620, behavior: "smooth" })}>{I.next()}</button>
+            <button className="iconbtn" type="button" aria-label="Scroll trending back" onClick={() => rail.current?.scrollBy({ left: -rail.current.clientWidth, behavior: "smooth" })}>{I.back()}</button>
+            <button className="iconbtn" type="button" aria-label="Scroll trending forward" onClick={() => rail.current?.scrollBy({ left: rail.current.clientWidth, behavior: "smooth" })}>{I.next()}</button>
           </div></div>
         <div className="rail" ref={rail}>
           {(trending.data?.tokens ?? []).map((t, i) => (
@@ -70,7 +70,7 @@ export function Explore({ search }: { search: string }) {
                 <span className="v">{usdFull(t.market_cap_usd)}</span></div>
             </Link><ShareButton t={t} compact className="tc-share" /></div>
           ))}
-          {trending.loading && !trending.data && [0, 1, 2].map((i) => <div key={i} className="tc"><div className="tc-art" style={{ background: "var(--raised)" }} /><div className="tc-cap"><span className="skel" /></div></div>)}
+          {trending.loading && !trending.data && [0, 1, 2, 3].map((i) => <div key={i} className="tc" aria-hidden="true"><div className="tc-art skel" style={{ width: "100%", height: "auto", borderRadius: 0 }} /><div className="tc-cap"><span className="skel" style={{ width: "50%" }} /><span /><span className="skel" style={{ width: "80%", marginTop: 6 }} /></div></div>)}
         </div>
       </section>
       <section className="panel tex" aria-label="All tokens">
@@ -80,14 +80,24 @@ export function Explore({ search }: { search: string }) {
         </div>
         <div className="tscroll">
           <table>
-            <thead><tr className="lbl"><th className="l">#</th><th className="l">Token</th><th className="c-hide">Last 24h</th><th>Market cap</th><th>24h</th><th className="c-hide">Volume</th><th className="c-hide">Graduation</th></tr></thead>
+            <thead><tr className="lbl"><th className="l rank">#</th><th className="l">Token</th><th className="c-hide">Last 24h</th><th>Market cap</th><th>24h</th><th className="c-hide">Volume</th><th className="c-hide">Graduation</th></tr></thead>
             <tbody>
+              {list.loading && !list.data && [0, 1, 2, 3, 4, 5].map((i) => (
+                <tr key={i} className="skel-row" aria-hidden="true">
+                  <td className="l rank"><span className="skel" style={{ width: 12 }} /></td>
+                  <td className="l"><div className="tok"><span className="skel sq" /><div style={{ display: "grid", gap: 6 }}><span className="skel" style={{ width: 70 }} /><span className="skel" style={{ width: 140 }} /></div></div></td>
+                  <td className="c-hide"><span className="skel" style={{ width: 106, marginLeft: "auto" }} /></td>
+                  <td><span className="skel" style={{ width: 60, marginLeft: "auto" }} /></td>
+                  <td><span className="skel" style={{ width: 48, marginLeft: "auto" }} /></td>
+                  <td className="c-hide"><span className="skel" style={{ width: 52, marginLeft: "auto" }} /></td>
+                  <td className="c-hide"><span className="skel" style={{ width: 110, marginLeft: "auto" }} /></td>
+                </tr>))}
               {rows.map((t, i) => (
-                <tr key={t.address} className="link" tabIndex={0} onClick={() => navigate(`/token/${t.address}`)} onKeyDown={(e) => e.key === "Enter" && navigate(`/token/${t.address}`)}>
-                  <td className="l faint" style={{ width: 32, fontSize: 12 }}>{i + 1}</td>
+                <tr key={t.address} className="link" tabIndex={0} aria-label={`${t.name}, $${t.symbol}`} onClick={() => navigate(`/token/${t.address}`)} onKeyDown={(e) => e.key === "Enter" && navigate(`/token/${t.address}`)}>
+                  <td className="l faint rank" style={{ width: 32, fontSize: 12 }}>{i + 1}</td>
                   <td className="l"><div className="tok"><TokenImage address={t.address} logo={t.logo} size={42} label={t.name} /><div><div className="t">${t.symbol}</div><div className="n">{t.name} · <Creator t={t} compact /> · {ago(t.launched_at)}</div></div></div></td>
                   <td className="c-hide"><Spark address={t.address} up={t.change_24h >= 0} /></td>
-                  <td>{usd(t.market_cap_usd ?? fromWei(t.market_cap_quote))}</td>
+                  <td>{t.market_cap_usd != null ? usd(t.market_cap_usd) : `${amount(fromWei(t.market_cap_quote))} HYPE`}</td>
                   <td className={t.change_24h >= 0 ? "up" : "down"}>{pct(t.change_24h)}</td>
                   <td className="c-hide">{usd(t.volume_24h_usd)}</td>
                   <td className="c-hide"><GradCell t={t} /></td>
@@ -95,9 +105,11 @@ export function Explore({ search }: { search: string }) {
               ))}
             </tbody>
           </table>
-          {list.error && <div className="empty err">{list.error}</div>}
-          {!list.error && !list.loading && rows.length === 0 && <div className="empty">{search ? `No token matches “${search}”. Try a ticker or paste a contract address.` : "No tokens here yet. Launch the first one."}</div>}
-          {list.loading && !list.data && <div className="empty"><span className="skel" /></div>}
+          {list.error && <div className="empty"><p className="err" style={{ margin: 0 }}>Couldn't load tokens. {list.error}</p><button className="btn btn-quiet btn-sm" type="button" onClick={list.reload}>Try again</button></div>}
+          {!list.error && !list.loading && rows.length === 0 && (search
+            ? <div className="empty">No token matches “{search}”. Try a ticker, a name, or paste the full contract address.</div>
+            : <div className="empty">{tab.id === "grad" ? "No token has graduated yet." : tab.id === "near" ? "No token is close to graduating yet." : "No tokens here yet."}
+                <div><Link className="btn btn-primary btn-sm" to="/create">{I.plus()}Launch a token</Link></div></div>)}
         </div>
         {list.data && list.data.total > rows.length && <div className="more"><button className="btn btn-quiet btn-sm" type="button" onClick={() => setLimit((l) => l + 50)}>Show more</button></div>}
       </section>

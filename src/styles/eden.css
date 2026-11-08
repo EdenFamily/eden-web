@@ -780,3 +780,4 @@ main:focus { outline: none; }
 /* The wallet sheet title inherited the uppercase mono section-heading style ("CONNECT TO EDEN") */
 .ws-card h2 { text-transform: none; letter-spacing: -.01em; }
 .ws-card { overscroll-behavior: contain; }
+@media (max-width: 860px) { .xi .btn-sm { height: 40px; padding: 0 16px; } .xi-more { padding: 10px 4px; } }

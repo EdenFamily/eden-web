@@ -16,10 +16,16 @@ export function XIntro({ prelaunch = false }: { prelaunch?: boolean }) {
     if (!seen) { const t = setTimeout(() => setOpen(true), 900); return () => clearTimeout(t); }
   }, []);
   const close = () => { setOpen(false); try { localStorage.setItem(SEEN, "1"); } catch { /* storage unavailable */ } };
+  useEffect(() => {
+    if (!open) return;
+    const key = (e: KeyboardEvent) => { if (e.key === "Escape") close(); };
+    document.addEventListener("keydown", key);
+    return () => document.removeEventListener("keydown", key);
+  }, [open]);
   if (!open) return null;
   return (
     <aside className="xi" role="dialog" aria-labelledby="xi-title">
-      <button className="xi-close" type="button" onClick={close} aria-label="Close">
+      <button className="xi-close" type="button" onClick={close} aria-label="Close: don't show again">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
       </button>
       <div className="xi-head"><span className="xi-x"><XLogo /></span><div><h2 id="xi-title">Launch from X</h2><p>{prelaunch ? "Live when Eden opens." : "Any post can become a token."}</p></div></div>

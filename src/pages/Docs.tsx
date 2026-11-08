@@ -127,7 +127,7 @@ export function Docs() {
             <div className="panel tex doc-example"><span className="mono">@edenfamily $FROG Frog</span></div>
             <ul>
               <li><b>Ticker</b> is the word after <span className="mono">$</span>; <b>name</b> is the rest of the text. The attached image becomes the token's logo.</li>
-              <li>Reply to any post with the same text to turn that post into a token. Its image is used.</li>
+              <li>Reply to any post with the same text to turn that post into a token. Its image is used, and <b>you</b> are the token's creator, not the person who wrote the post. A token made from someone's post is not endorsed by them.</li>
               <li>Eden launches the token and replies to you with its contract address. Replies carry no links, so always check the contract address on Eden before you trade.</li>
               <li><b>Creator fees go to your linked Eden wallet</b> from the first trade: 70% of the trading fee, the same as launching on the site.</li>
               <li>Launching from X costs you nothing; Eden pays the launch. The same limit of 5 launches a month applies, along with spam limits such as a minimum account age and one launch per post.</li>

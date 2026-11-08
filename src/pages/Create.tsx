@@ -1,4 +1,4 @@
-import { useMemo, useState, type FormEvent } from "react";
+import { useMemo, useRef, useState, type FormEvent } from "react";
 import { decodeEventLog, keccak256, parseUnits, toHex, zeroAddress, type Address, type Hex } from "viem";
 import { contracts, factoryAbi, LAUNCH_FEE_WEI, launchAndBuyAbi } from "../lib/chain";
 import { initialBuyShare } from "../lib/curve";
@@ -9,6 +9,8 @@ import { askToConnect } from "../components/Shell";
 import { toast, useData } from "../components/ui";
 import { api } from "../lib/api";
 import { GRADUATION_HYPE } from "../lib/deployment";
+import { ipfsImage } from "../lib/art";
+import { prepareImage, uploadImage } from "../lib/upload";
 
 const FEES = [0, 1, 2, 3, 5, 10];
 const ZERO32 = ("0x" + "0".repeat(64)) as Hex;
@@ -18,7 +20,10 @@ export function Create() {
   const w = useWallet();
   const [step, setStep] = useState(1);
   const [f, setF] = useState({ name: "", ticker: "", description: "", x: "", telegram: "", website: "" });
-  const [image, setImage] = useState<string>();
+  /** the chosen image: a local preview while it uploads, then its ipfs:// logo (shown from Eden's image cache) */
+  const [img, setImg] = useState<{ preview: string; logo?: string; progress: number; error?: string }>();
+  const pickId = useRef(0);
+  const uploading = !!img && !img.logo && !img.error;
   const [fee, setFee] = useState(1);
   const [buy, setBuy] = useState("1");
   const [buyback, setBuyback] = useState(true);
@@ -35,11 +40,24 @@ export function Create() {
   const badBundle = bundleList.filter((a) => !isAddr(a));
   const initials = f.name.trim().split(/\s+/).map((x) => x[0]).join("").slice(0, 2).toUpperCase() || "?";
 
+  async function pick(file: File) {
+    const id = ++pickId.current;
+    const mine = (patch: Partial<NonNullable<typeof img>>) => { if (pickId.current === id) setImg((s) => ({ preview: "", progress: 0, ...s, ...patch })); };
+    setImg({ preview: URL.createObjectURL(file), progress: 0 });
+    try {
+      const prepared = await prepareImage(file);
+      mine({ preview: URL.createObjectURL(prepared) });
+      const logo = await uploadImage(prepared, (p) => mine({ progress: p }));
+      mine({ logo, progress: 1, preview: ipfsImage(logo) });
+    } catch (e) { mine({ error: (e as Error).message }); }
+  }
+
   function next(e: FormEvent) {
     e.preventDefault();
-    const missing = [!f.name.trim() && "a name", !f.ticker && "a ticker"].filter(Boolean);
-    setErr(missing.length ? `Add ${missing.join(" and ")} to continue.` : "");
-    if (!missing.length) setStep(2);
+    const missing = [!img?.logo && !uploading && "an image", !f.name.trim() && "a name", !f.ticker && "a ticker"].filter(Boolean) as string[];
+    const list = missing.length > 1 ? `${missing.slice(0, -1).join(", ")} and ${missing.at(-1)}` : missing[0];
+    setErr(missing.length ? `Add ${list} to continue.` : uploading ? "Wait for the image to finish uploading." : "");
+    if (!missing.length && !uploading) setStep(2);
   }
 
   async function launch(e: FormEvent) {
@@ -48,10 +66,11 @@ export function Create() {
     if (full) return setErr(`You've launched ${limit} tokens this month. You can launch again on ${new Date(quota.data!.resetsAt).toLocaleDateString()}.`);
     if (badBundle.length) return setErr(`Not an address: ${badBundle[0]}`);
     if (bundleList.length > 31) return setErr("Up to 31 bundle wallets.");
+    if (!img?.logo) { setStep(1); return setErr("Add an image to continue."); }
     setErr("");
     const salt = keccak256(toHex(`${w.address}:${f.ticker}:${Date.now()}:${Math.random()}`));
     const params = {
-      name: f.name.trim(), symbol: f.ticker, logo: "", description: f.description.trim(),
+      name: f.name.trim(), symbol: f.ticker, logo: img.logo, description: f.description.trim(),
       socials: { twitter: f.x.trim(), telegram: f.telegram.trim(), discord: "", website: f.website.trim(), farcaster: "" },
       creatorFeeRecipient: w.address, creatorTaxBps: fee * 100, buybackEnabled: buyback, expectedEconomics: ZERO32, salt,
     };
@@ -87,11 +106,13 @@ export function Create() {
       <div className="cgrid">
         {step === 1 ? (
           <form className="panel tex form" onSubmit={next} noValidate>
-            <div className="field"><div className="field-row"><span>Image</span><span className="c">Square, up to 5 MB</span></div>
-              <div className="drop"><div className="pv">{image ? <img src={image} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : "+"}</div>
-                <label className="btn btn-quiet btn-sm" htmlFor="img">Choose image</label>
-                <input id="img" type="file" accept="image/*" hidden onChange={(e) => { const file = e.target.files?.[0]; if (file) setImage(URL.createObjectURL(file)); }} /></div>
-              <p className="help">Images go to IPFS once the upload service is connected. Until then tokens use generated art.</p></div>
+            <div className="field"><div className="field-row"><span>Image</span><span className="c">Required · square works best</span></div>
+              <div className="drop"><div className="pv">{img?.preview ? <img src={img.preview} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : "+"}</div>
+                <label className="btn btn-quiet btn-sm" htmlFor="img">{img ? "Change image" : "Choose image"}</label>
+                <input id="img" type="file" accept="image/*" hidden onChange={(e) => { const file = e.target.files?.[0]; e.target.value = ""; if (file) void pick(file); }} />
+                {img && <span className="upl" aria-live="polite">{img.error ? <span className="err">{img.error}</span> : img.logo ? <span className="ok">Uploaded to IPFS</span>
+                  : <><span className="upl-bar"><span style={{ width: `${Math.round(img.progress * 100)}%` }} /></span><span className="muted">Uploading {Math.round(img.progress * 100)}%</span></>}</span>}</div>
+              <p className="help">PNG, JPEG, GIF or WEBP. Eden crops it to a square and stores it on IPFS with your token.</p></div>
             <div className="two">
               <div className="field"><div className="field-row"><label htmlFor="nm">Name</label><span className="c">{f.name.length}/32</span></div><input className="input" id="nm" maxLength={32} placeholder="Aether" value={f.name} onChange={set("name")} /></div>
               <div className="field"><div className="field-row"><label htmlFor="tk">Ticker</label><span className="c">{f.ticker.length}/10</span></div><input className="input mono" id="tk" maxLength={10} placeholder="AETH" value={f.ticker} onChange={set("ticker")} /></div>
@@ -102,7 +123,7 @@ export function Create() {
               <div className="field"><label className="field-row" htmlFor="st">Telegram</label><input className="input" id="st" placeholder="https://t.me/…" value={f.telegram} onChange={set("telegram")} /></div>
               <div className="field"><label className="field-row" htmlFor="sw">Website</label><input className="input" id="sw" placeholder="https://" value={f.website} onChange={set("website")} /></div>
             </div>
-            <div className="formfoot"><span className="err">{err}</span><button className="btn btn-primary" type="submit">Continue</button></div>
+            <div className="formfoot"><span className="err">{err}</span><button className="btn btn-primary" type="submit" disabled={uploading}>{uploading ? "Uploading image…" : "Continue"}</button></div>
           </form>
         ) : (
           <form className="panel tex form" onSubmit={(e) => void launch(e)} noValidate>
@@ -121,11 +142,11 @@ export function Create() {
             {err && <span className="err">{err}</span>}
             <div className="formfoot"><button className="btn btn-quiet" type="button" onClick={() => setStep(1)}>Back</button>
               <span className="help mono">Total {total.toFixed(4).replace(/0+$/, "").replace(/\.$/, "")} HYPE + gas{quota.data ? ` · ${used}/${limit} launches this month` : ""}</span>
-              <button className="btn btn-primary" type="submit" disabled={!!busy || full}>{busy || (!w.address ? "Sign in to launch" : full ? "Monthly limit reached" : "Launch token")}</button></div>
+              <button className="btn btn-primary" type="submit" disabled={!!busy || full || !img?.logo}>{busy || (!w.address ? "Sign in to launch" : full ? "Monthly limit reached" : "Launch token")}</button></div>
           </form>
         )}
         <aside className="panel tex board" aria-label="Preview"><span className="lbl">On the board</span>
-          <div className="board-tok"><span className="tile" style={{ width: 56, height: 56, fontSize: 18, background: "var(--well)", color: "var(--accent)" }}>{image ? <img src={image} alt="" /> : initials}</span>
+          <div className="board-tok"><span className="tile" style={{ width: 56, height: 56, fontSize: 18, background: "var(--well)", color: "var(--accent)" }}>{img?.preview ? <img src={img.preview} alt="" /> : initials}</span>
             <div><div style={{ font: "600 18px var(--sans)" }}>{f.name || "Your token"}</div><div className="mono muted">${f.ticker || "TICKER"} · HYPE pair</div>
               {w.address && <div className="muted" style={{ fontSize: 13, marginTop: 4 }}>by <span className="mono">{short(w.address)}</span></div>}</div></div>
           <p className="muted" style={{ margin: 0 }}>{f.description || "A line or two about the token goes here."}</p>

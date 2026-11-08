@@ -586,3 +586,9 @@ footer { padding-top: 56px; }
 .slip-edit .chip[aria-pressed="true"] { color: var(--ink); border-color: var(--accent); }
 .slip-custom { display: inline-flex; align-items: center; gap: 4px; font: 500 13px var(--mono); color: var(--muted); }
 .slip-custom input { width: 64px; height: 30px; padding: 0 8px; border-radius: var(--r); border: 1px solid var(--rule-2); background: var(--well); color: var(--ink); font: inherit; }
+
+/* image upload on Create */
+.upl { display: inline-flex; align-items: center; gap: 10px; font-size: 13px; }
+.upl .ok { color: var(--accent); }
+.upl-bar { width: 96px; height: 4px; border-radius: 2px; background: var(--well); overflow: hidden; }
+.upl-bar span { display: block; height: 100%; background: var(--accent); transition: width .15s; }

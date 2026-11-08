@@ -46,10 +46,20 @@ export function tokenArt(address: string, w: number, h: number): string {
 
 /** IPFS gateway for token images (VITE_IPFS_GATEWAY, e.g. a dedicated Pinata gateway); the public one rate-limits. */
 const IPFS_GATEWAY = String(import.meta.env.VITE_IPFS_GATEWAY || "https://ipfs.io").replace(/\/+$/, "");
+const API = import.meta.env.VITE_API_URL ?? "/api";
+
+/**
+ * An ipfs:// image: a bare CID comes from Eden's own image cache (fetched from IPFS once, then served from disk and
+ * cached for a year, since a CID never changes); a CID with a path goes to the gateway.
+ */
+export function ipfsImage(logo: string): string {
+  const rest = logo.slice(7), cid = rest.split("/")[0]!;
+  return rest === cid && /^[A-Za-z0-9]+$/.test(cid) ? `${API}/images/ipfs/${cid}` : `${IPFS_GATEWAY}/ipfs/${rest}`;
+}
 
 /** The creator's image when it is a usable URL (https or ipfs), else generated art. */
 export function imageFor(address: string, logo: string, w: number, h: number): string {
-  if (logo.startsWith("ipfs://")) return `${IPFS_GATEWAY}/ipfs/${logo.slice(7)}`;
+  if (logo.startsWith("ipfs://")) return ipfsImage(logo);
   if (/^https:\/\//.test(logo)) return logo;
   return tokenArt(address, w, h);
 }

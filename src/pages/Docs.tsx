@@ -176,10 +176,9 @@ export function Docs() {
           <section id="perps">
             <h2>Perps <span className="soon">Soon</span></h2>
             <p>Tokens that keep trading after graduation are headed for perpetual markets.</p>
-            <p><b>Every trade funds its own perps listing.</b> Part of Eden's fee on each token is saved in a perps fund, tracked per token. When the fund covers the listing cost, it goes toward listing that token with our perps partner.</p>
+            <p>Eden's share of each token's fees goes toward its perps listing. When the creator claims their fees, Eden's share drops by the same portion. Any token can still list.</p>
             <ul>
               <li><b>On-chain:</b> each fund is calculated from on-chain fee events, so anyone can verify it.</li>
-              <li><b>Earned:</b> only graduated tokens with real volume qualify.</li>
               <li><b>Fair pricing:</b> markets are priced from the token's locked pool, with isolated margin and open-interest caps.</li>
             </ul>
             <p>Details are published before launch.</p>

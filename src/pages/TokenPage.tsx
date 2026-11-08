@@ -9,6 +9,7 @@ import { Link } from "../components/router";
 import { ShareButton } from "../components/Share";
 import { TradePanel, pickTradeSide } from "../components/TradePanel";
 import { Copy, StateCard, TokenImage, useData } from "../components/ui";
+import { useHypeUsd } from "../lib/graduation";
 
 const INTERVALS = ["1m", "5m", "15m", "1h", "4h", "1d"] as const;
 const SPAN_H: Record<string, number> = { "1m": 2, "5m": 8, "15m": 24, "1h": 72, "4h": 24 * 10, "1d": 24 * 60 };
@@ -192,16 +193,19 @@ export function TokenPage({ address }: { address: string }) {
 
 /** Progress of this token's perps fund, once the server reports it. How it's funded is on /docs#perps. Perps are not live yet. */
 function PerpsFund({ t }: { t: Token }) {
-  if (t.perps_fund_hype == null || !t.perps_fund_target_hype) return null;
-  const have = Number(t.perps_fund_hype), need = Number(t.perps_fund_target_hype);
-  if (!Number.isFinite(have) || !Number.isFinite(need) || need <= 0) return null;
-  const full = have >= need;
+  const hypeUsd = useHypeUsd();
+  if (t.perps_fund_hype == null) return null;
+  const have = Number(t.perps_fund_hype);
+  if (!Number.isFinite(have)) return null;
+  // the bar and pill only once the server reports a listing target
+  const need = t.perps_fund_target_hype == null ? NaN : Number(t.perps_fund_target_hype);
+  const target = Number.isFinite(need) && need > 0, full = target && have >= need;
   return (
     <section className={`panel tex perps-fund ${full ? "is-full" : ""}`} aria-label="Perps fund">
-      <div className="box-row"><span className="lbl">Perps fund<span className="soon">Soon</span></span><span className={`pf-pill ${full ? "is-full" : ""}`}>{full ? "Target reached" : `${Math.floor((have / need) * 100)}% funded`}</span></div>
-      <div className="pf-amt"><span className="mono">{have.toFixed(1)}</span> <span className="faint mono">/ {need.toFixed(0)} HYPE</span></div>
-      <Progress value={(have / need) * 100} label="Perps fund progress" />
-      <p className="muted" style={{ margin: 0, fontSize: 13 }}>Part of Eden's fee on every trade is saved toward listing this token on perps. Perps are coming soon. <Link to="/docs#perps">How it works</Link></p>
+      <div className="box-row"><span className="lbl">Perps fund<span className="soon">Soon</span></span>{target && <span className={`pf-pill ${full ? "is-full" : ""}`}>{full ? "Target reached" : `${Math.floor((have / need) * 100)}% funded`}</span>}</div>
+      <div className="pf-amt"><span className="mono">{have.toFixed(2)}</span> <span className="faint mono">{target ? `/ ${need.toFixed(0)} HYPE` : "HYPE"}</span>{hypeUsd != null && <span className="faint mono"> ≈ {usd(have * hypeUsd)}</span>}</div>
+      {target && <Progress value={(have / need) * 100} label="Perps fund progress" />}
+      <p className="muted" style={{ margin: 0, fontSize: 13 }}>Part of Eden's fee on this token goes toward a perps listing. <Link to="/docs#perps">How it works</Link></p>
     </section>
   );
 }

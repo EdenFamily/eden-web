@@ -119,13 +119,14 @@ export function Shell({ children, search, onSearch, prelaunch = false }: { child
   const active = (to: string) => (to === "/" ? path === "/" || path.startsWith("/token/") : path.startsWith(to));
   return (
     <>
+      <a className="skip" href="#main">Skip to content</a>
       <nav className="side" aria-label="Main">
         <Link className="brand" to="/" aria-label="Eden home"><Mark size={22} /></Link>
         {nav.map((n) => <Link key={n.to} className="nav" to={n.to} aria-current={(prelaunch && n.to === "/" ? path === "/" : active(n.to)) ? "page" : undefined}>{n.icon()}{n.label}</Link>)}
         {!prelaunch && <>
           <Link className="nav" to="/docs#perps">{I.perps()}Perps<span className="soon">Soon</span></Link>
           <Link className="nav docs" to="/docs" aria-current={path.startsWith("/docs") ? "page" : undefined}>{I.docs()}Docs</Link>
-          <button className="nav" type="button" onClick={(e) => { e.stopPropagation(); openWallet(); }}>{I.signin()}<span>{w.address ? short(w.address) : "Sign in"}</span></button>
+          <button className="nav" type="button" onClick={(e) => { e.stopPropagation(); openWallet(); }}>{I.signin()}<span>{w.address ? short(w.address) : "Connect wallet"}</span></button>
         </>}
       </nav>
       <header className="top">
@@ -142,12 +143,12 @@ export function Shell({ children, search, onSearch, prelaunch = false }: { child
                 {w.wallet?.icon ? <img className="wicon" src={w.wallet.icon} alt="" width={18} height={18} /> : <span className="dot" />}
                 {w.wrongChain && <span className="dot" style={{ background: "var(--down)" }} title="Wrong network" />}{short(w.address)}<span className="bal">{w.balance != null ? (Number(w.balance) / 1e18).toFixed(2) : "…"}</span>
               </button>
-            : <button className="btn btn-primary connect" type="button" aria-haspopup="dialog" onClick={(e) => { e.stopPropagation(); setSheet(true); }}>{I.wallet(16)}<span>Connect</span></button>}
+            : <button className="btn btn-primary connect" type="button" aria-haspopup="dialog" aria-label="Connect wallet" onClick={(e) => { e.stopPropagation(); setSheet(true); }}>{I.wallet(16)}<span>Connect wallet</span></button>}
           {open && <WalletPanel onClose={() => setOpen(false)} />}
           {sheet && <WalletSheet onClose={() => setSheet(false)} />}
         </div>
       </header>
-      <main>{children}</main>
+      <main id="main" tabIndex={-1}>{children}</main>
       <footer><SiteFooter prelaunch={prelaunch} /></footer>
       <XIntro prelaunch={prelaunch} />
       <nav className="mbar" aria-label="Main">

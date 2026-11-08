@@ -8,6 +8,7 @@ import { Link, navigate } from "../components/router";
 import { TokenImage, useData } from "../components/ui";
 import { Creator } from "../components/Creator";
 import { ShareButton } from "../components/Share";
+import { FollowX } from "../components/FollowX";
 
 const TABS: Array<{ id: string; label: string; tab: Tab; sort?: string }> = [
   { id: "mcap", label: "Market cap", tab: "trending", sort: "market_cap" },
@@ -52,7 +53,7 @@ export function Explore({ search }: { search: string }) {
       <section className="hero" aria-label="Eden">
         <h1>Every token starts in Eden.</h1>
         <p>The launchpad that takes memes from launch to perpetuals. Built on Uniswap, live on Elysium.</p>
-        <Link className="btn btn-launch" to="/create">{I.plus()}Launch a token</Link>
+        <div className="hero-cta"><Link className="btn btn-launch" to="/create">{I.plus()}Launch a token</Link><FollowX className="btn btn-quiet hero-x" /></div>
       </section>
       <section className="sec" aria-label="Trending">
         <div className="sec-row"><h2>Trending</h2>

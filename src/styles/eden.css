@@ -592,3 +592,17 @@ footer { padding-top: 56px; }
 .upl .ok { color: var(--accent); }
 .upl-bar { width: 96px; height: 4px; border-radius: 2px; background: var(--well); overflow: hidden; }
 .upl-bar span { display: block; height: 100%; background: var(--accent); transition: width .15s; }
+
+/* Follow on X: next to Read the docs (waiting page) and Launch a token (Explore hero) */
+.follow-x { gap: 8px; }
+.waiting-cta, .hero-cta { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.waiting-cta { justify-content: center; }
+.waiting-cta .btn { height: 44px; padding: 0 20px; font-size: 15px; }
+.hero-cta { margin-top: 6px; }
+.hero-cta .btn-launch { margin-top: 0; }
+.hero-cta .btn { height: 42px; padding: 0 18px; }
+.hero-x { background: rgba(4,24,28,.6); color: #eaf1f3; border-color: rgba(234,241,243,.22); }
+@media (max-width: 420px) {
+  .waiting-cta { width: 100%; }
+  .waiting-cta .btn { flex: 1 1 140px; }
+}

@@ -2,7 +2,7 @@ import { Link } from "./router";
 
 const SUPPORT = "support@edenfamily.xyz";
 const EXPLORER = "https://elysium.kinetiq.xyz/explorer";
-const X_URL = String(import.meta.env.VITE_X_URL ?? "").trim();
+import { X_URL } from "./FollowX";
 const GITHUB_URL = String(import.meta.env.VITE_GITHUB_URL ?? "").trim();
 
 /** "Built on Elysium" with Elysium's own logo: on the waiting page only. */

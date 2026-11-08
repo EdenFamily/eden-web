@@ -18,7 +18,7 @@
     color-scheme: light;
     --bg: #eef4f4; --panel: #ffffff; --raised: #e5eeee; --well: #d9e6e6;
     --rule: rgba(4, 24, 28, .10); --rule-2: rgba(4, 24, 28, .2);
-    --ink: #04181c; --muted: #3f5a5f; --faint: #557074;
+    --ink: #04181c; --muted: #3f5a5f; --faint: #4d676b;
     --accent: #0b7356; --on-accent: #ffffff; --gold: #8a5d00; --down: #b81d35; --on-down: #ffffff;
     --launch: linear-gradient(135deg, #12916c, #0b7356 55%, #0d6474);
     --cap: #e2ecec; --on-cap: #04181c; --on-cap-muted: #3f5a5f; --cap-up: #0b7356; --cap-down: #b81d35;
@@ -29,7 +29,7 @@
   color-scheme: light;
   --bg: #eef4f4; --panel: #ffffff; --raised: #e5eeee; --well: #d9e6e6;
   --rule: rgba(4, 24, 28, .10); --rule-2: rgba(4, 24, 28, .2);
-  --ink: #04181c; --muted: #3f5a5f; --faint: #557074;
+  --ink: #04181c; --muted: #3f5a5f; --faint: #4d676b;
   --accent: #0b7356; --on-accent: #ffffff; --gold: #8a5d00; --down: #b81d35; --on-down: #ffffff;
   --launch: linear-gradient(135deg, #12916c, #0b7356 55%, #0d6474);
   --cap: #e2ecec; --on-cap: #04181c; --on-cap-muted: #3f5a5f; --cap-up: #0b7356; --cap-down: #b81d35;

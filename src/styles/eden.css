@@ -384,3 +384,46 @@ details summary::-webkit-details-marker { display: none; }
 .bk-type .t-mono { font: 400 20px var(--mono); font-variant-numeric: tabular-nums; }
 .bk-rules { padding: 18px; display: grid; gap: 10px; }
 .bk-rules ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; color: var(--muted); }
+
+/* ---------------------------------------------------------------- wallet: connect button, connect sheet */
+.btn.connect { height: 38px; padding: 0 14px; font-size: 14px; gap: 7px; }
+.wbtn .wicon { border-radius: 5px; }
+.wrongnet { display: flex; flex-direction: column; gap: 8px; padding: 10px 12px; border-radius: var(--r); background: color-mix(in srgb, var(--down) 12%, transparent); font-size: 13px; }
+.ws-scrim { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom)); background: var(--scrim); animation: ws-fade .16s ease-out; }
+.ws-card { width: min(400px, 100%); max-height: 100%; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 16px 20px 18px; border-radius: 18px; border: 1px solid var(--rule-2); background: var(--panel); box-shadow: var(--shadow); animation: ws-rise .2s cubic-bezier(.2,.8,.2,1); }
+.ws-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2px; }
+.ws-icon { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 10px; color: var(--muted); }
+button.ws-icon:hover { background: var(--raised); color: var(--ink); }
+.ws-mark { display: block; }
+.ws-card h2 { margin: 0; text-align: center; font: 600 19px/1.3 var(--sans); text-wrap: balance; }
+.ws-sub { margin: 0 0 6px; text-align: center; color: var(--muted); font-size: 14px; line-height: 1.5; }
+.ws-label { margin-top: 6px; color: var(--faint); font: 500 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+.ws-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.ws-list button, .ws-list a { width: 100%; min-height: 56px; display: flex; align-items: center; gap: 12px; padding: 0 14px; border-radius: 12px; border: 1px solid var(--rule); background: var(--bg); color: var(--ink); font: 500 15px var(--sans); text-align: left; text-decoration: none; transition: border-color .12s, background .12s; }
+.ws-list button:hover, .ws-list a:hover { border-color: var(--rule-2); background: var(--raised); }
+.ws-list button:focus-visible, .ws-list a:focus-visible, .ws-icon:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.ws-grid { display: grid; grid-template-columns: 1fr 1fr; }
+.ws-grid a { min-height: 48px; font-size: 14px; gap: 10px; padding: 0 12px; }
+.ws-logo { flex: none; border-radius: 9px; object-fit: cover; }
+.ws-letter { display: grid; place-items: center; background: var(--well); color: var(--ink); font: 700 14px var(--sans); }
+.ws-name { display: flex; flex-direction: column; min-width: 0; }
+.ws-name small { color: var(--muted); font-size: 12px; font-weight: 400; }
+.ws-tag { margin-left: auto; padding: 3px 8px; border-radius: 999px; background: var(--well); color: var(--muted); font: 500 11px var(--mono); }
+.ws-tag.recent { background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent); }
+.ws-note { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+.ws-foot { margin: 10px 0 0; padding-top: 12px; border-top: 1px solid var(--rule); color: var(--faint); font-size: 12px; line-height: 1.5; text-align: center; }
+.ws-state { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 6px 0 4px; }
+.ws-ring { position: relative; width: 84px; height: 84px; display: grid; place-items: center; margin: 8px 0 4px; }
+.ws-ring::before { content: ""; position: absolute; inset: 0; border-radius: 50%; border: 2px solid var(--rule); border-top-color: var(--accent); animation: ws-spin 1s linear infinite; }
+.ws-ring.off::before { border-color: color-mix(in srgb, var(--down) 50%, transparent); animation: none; }
+.ws-ring .ws-logo { border-radius: 14px; }
+.ws-qr { width: min(256px, 70vw); height: auto; aspect-ratio: 1; padding: 10px; border-radius: 16px; background: #fff; border: 1px solid var(--rule-2); }
+.ws-qr-wait { display: grid; place-items: center; background: var(--well); }
+.ws-spin { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--rule-2); border-top-color: var(--accent); animation: ws-spin 1s linear infinite; }
+.ws-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 4px; }
+@keyframes ws-spin { to { transform: rotate(360deg); } }
+@keyframes ws-fade { from { opacity: 0; } }
+@keyframes ws-rise { from { opacity: 0; transform: translateY(8px) scale(.98); } }
+@media (max-width: 520px) { .ws-scrim { place-items: end center; padding: 0; } .ws-card { width: 100%; border-radius: 20px 20px 0 0; padding-bottom: max(18px, env(safe-area-inset-bottom)); } .ws-grid { grid-template-columns: 1fr; } }
+@media (max-width: 400px) { .btn.connect span { display: none; } .btn.connect { padding: 0 11px; } }
+@media (prefers-reduced-motion: reduce) { .ws-scrim, .ws-card { animation: none; } .ws-ring::before, .ws-spin { animation-duration: 3s; } }

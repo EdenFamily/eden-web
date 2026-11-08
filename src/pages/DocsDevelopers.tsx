@@ -1,8 +1,10 @@
 import { ABIS, DEPLOYMENT_JSON_URL, MAINNET, SOURCE_URL } from "../lib/deployment";
+import { ApiReference } from "../components/ApiReference";
 
 /** The developer half of the docs: source, ABIs and short viem examples against the mainnet contracts. */
 export const DEV_SECTIONS = [
   ["developers", "Build on Eden"],
+  ["api", "API"],
   ["dev-launch", "Launching a token"],
   ["dev-trade", "Buying and selling"],
   ["dev-read", "Reading a launch"],
@@ -27,6 +29,20 @@ export function DocsDevelopers() {
           <li><b>ABIs:</b> full JSON for every contract, <a href="#abis">below</a></li>
         </ul>
         <p>The examples use <a href="https://viem.sh" target="_blank" rel="noreferrer">viem</a>. Amounts are in wei; HYPE and every Eden token have 18 decimals.</p>
+      </section>
+
+      <section id="api">
+        <h2>API</h2>
+        <p>One public API for the website, bots and agents, with no keys: <span className="mono">https://edenfamily.xyz/api</span>. Amounts are decimal strings in wei; errors are <span className="mono">{"{ error, message }"}</span>. The full spec is <a href="/api/openapi.json" target="_blank" rel="noreferrer">openapi.json</a>.</p>
+        <h3>Trading through the API</h3>
+        <ol>
+          <li><b>Quote.</b> <span className="mono">GET /tokens/:address/quote?side=buy&amp;amount=…&amp;slippageBps=300</span> returns the expected output and the minimum.</li>
+          <li><b>Build.</b> <span className="mono">POST /tx/swap</span> returns the unsigned transactions to sign in order (an approval first, when a sell needs one).</li>
+          <li><b>Verify each one before signing.</b> <span className="mono">chainId</span> is 99901, <span className="mono">to</span> is an Eden contract (or the token or its curve), the calldata decodes with the ABIs below, and its minimum out equals the quote's.</li>
+          <li><b>Sign locally.</b> Your key never leaves your machine.</li>
+          <li><b>Send.</b> Broadcast it yourself, or <span className="mono">POST /tx/send</span> with the signed transaction; then read the receipt.</li>
+        </ol>
+        <ApiReference />
       </section>
 
       <section id="dev-launch">

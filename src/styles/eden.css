@@ -802,3 +802,25 @@ main:focus { outline: none; }
 .linkx-ic { flex: none; width: 30px; height: 30px; display: grid; place-items: center; border-radius: 50%; background: var(--ink); color: var(--bg); }
 .linkx .btn { flex: none; margin-left: auto; }
 @media (max-width: 560px) { .linkx { flex-wrap: wrap; } .linkx .btn { margin-left: 42px; } }
+
+/* API reference (generated from /api/openapi.json) */
+.api-ref { display: flex; flex-direction: column; gap: 22px; margin-top: 8px; }
+.api-group { display: flex; flex-direction: column; gap: 6px; }
+.api-group h3 { margin: 0 0 4px; }
+.api-op { border: 1px solid var(--rule); border-radius: var(--r); background: var(--panel); }
+.api-op[open] { border-color: var(--rule-2); }
+.api-op summary { display: grid; grid-template-columns: 56px minmax(0, auto) minmax(0, 1fr); align-items: center; gap: 12px; padding: 10px 12px; cursor: pointer; list-style: none; }
+.api-op summary::-webkit-details-marker { display: none; }
+.api-op summary:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; border-radius: var(--r); }
+.api-m { font: 600 11px var(--mono); letter-spacing: .06em; text-align: center; padding: 3px 0; border-radius: 4px; border: 1px solid var(--rule-2); color: var(--muted); }
+.api-m.get { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 45%, transparent); }
+.api-m.post { color: var(--gold); border-color: color-mix(in srgb, var(--gold) 45%, transparent); }
+.api-path { font-size: 13px; color: var(--ink); overflow-wrap: anywhere; }
+.api-sum { font-size: 13px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.api-body { padding: 4px 14px 14px; display: flex; flex-direction: column; gap: 10px; border-top: 1px solid var(--rule); }
+.api-body p { margin: 8px 0 0; font-size: 13.5px; color: var(--muted); }
+.api-params { font-size: 13px; }
+.api-req { margin-left: 6px; font: 500 10px var(--mono); color: var(--gold); text-transform: uppercase; letter-spacing: .06em; }
+.api-example { max-height: 320px; overflow: auto; }
+.api-skel { display: flex; flex-direction: column; gap: 8px; }
+@media (max-width: 640px) { .api-op summary { grid-template-columns: 50px minmax(0, 1fr); } .api-sum { grid-column: 1 / -1; white-space: normal; } .api-params { display: block; overflow-x: auto; } }

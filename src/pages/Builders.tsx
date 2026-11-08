@@ -2,7 +2,7 @@ import { useState, type FormEvent } from "react";
 import { api, type BuilderRequest } from "../lib/api";
 import { useWallet } from "../lib/wallet";
 
-const SUPPORT = "support@eden.family";
+const SUPPORT = "support@edenfamily.xyz";
 const NEEDS = [
   ["technical", "Technical support"], ["marketing", "Marketing"], ["ecosystem", "Ecosystem alignment"],
   ["partnership", "Partnership or integration"], ["other", "Something else"],

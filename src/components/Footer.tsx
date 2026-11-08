@@ -1,6 +1,6 @@
 import { Link } from "./router";
 
-const SUPPORT = "support@eden.family";
+const SUPPORT = "support@edenfamily.xyz";
 const EXPLORER = "https://elysium.kinetiq.xyz/explorer";
 const X_URL = String(import.meta.env.VITE_X_URL ?? "").trim();
 const GITHUB_URL = String(import.meta.env.VITE_GITHUB_URL ?? "").trim();

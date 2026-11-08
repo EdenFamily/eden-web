@@ -2,7 +2,7 @@
 export type LegalSection = { id: string; title: string; body: string[] };
 export type LegalDoc = { title: string; updated: string; intro: string; sections: LegalSection[] };
 
-const CONTACT = "support@eden.family";
+const CONTACT = "support@edenfamily.xyz";
 export const LEGAL_CONTACT = CONTACT;
 
 export const TERMS: LegalDoc = {

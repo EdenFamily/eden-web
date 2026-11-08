@@ -133,9 +133,9 @@ export function Docs() {
                   <tr><td>Network</td><td>Elysium</td></tr>
                   <tr><td>Chain ID</td><td className="mono">{elysium.id}</td></tr>
                   <tr><td>Gas token</td><td>HYPE</td></tr>
-                  <tr><td>Launch factory</td><td className="mono">{contracts.factory}</td></tr>
-                  <tr><td>Launch and buy</td><td className="mono">{contracts.launchAndBuy}</td></tr>
-                  <tr><td>Fee escrow</td><td className="mono">{contracts.feeEscrow}</td></tr>
+                  <tr><td>Launch factory</td><td className="mono">{contracts.factory || "Published at launch"}</td></tr>
+                  <tr><td>Launch and buy</td><td className="mono">{contracts.launchAndBuy || "Published at launch"}</td></tr>
+                  <tr><td>Fee escrow</td><td className="mono">{contracts.feeEscrow || "Published at launch"}</td></tr>
                 </tbody>
               </table>
             </div>

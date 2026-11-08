@@ -26,7 +26,7 @@ function PairingQr({ uri }: { uri: string }) {
     <svg className="ws-qr" viewBox={`0 0 ${size} ${size}`} role="img" aria-label="QR code to connect a phone wallet" shapeRendering="crispEdges">
       <rect width={size} height={size} fill="#fff" />
       <path d={d} fill="#04181c" />
-      <image href="/brand/eden-icon.svg" x={c - logo / 2} y={c - logo / 2} width={logo} height={logo} />
+      <image href="/brand/eden-icon.svg?v=w1" x={c - logo / 2} y={c - logo / 2} width={logo} height={logo} />
     </svg>
   );
 }
@@ -74,7 +74,7 @@ export function WalletSheet({ onClose }: { onClose: () => void }) {
       <div ref={card} className="ws-card" role="dialog" aria-modal="true" aria-labelledby="ws-title" onClick={(e) => e.stopPropagation()}>
         <div className="ws-head">
           {back ? <button className="ws-icon" type="button" onClick={back} aria-label="Back"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M15 6l-6 6 6 6" /></svg></button> : <span className="ws-icon" aria-hidden="true" />}
-          <img className="ws-mark" src="/brand/eden-icon.svg" alt="" width={36} height={36} />
+          <img className="ws-mark" src="/brand/eden-icon.svg?v=w1" alt="" width={36} height={36} />
           <button className="ws-icon" type="button" onClick={close} aria-label="Close"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg></button>
         </div>
 

@@ -1,6 +1,8 @@
 import { Copy } from "../components/ui";
 
 const B = "/brand/";
+/** Bumped when the brand files change: Cloudflare caches them by URL. */
+const V = "?v=w1";
 type Asset = { file: string; label: string };
 
 const SYMBOLS: Array<Asset & { ground: "dark" | "light" }> = [
@@ -32,17 +34,17 @@ const SOCIAL: Array<Asset & { size: string }> = [
 ];
 
 function Download({ file, label }: Asset) {
-  return <a className="btn btn-quiet btn-sm" href={B + file} download aria-label={`Download ${label} (${file.split(".").pop()?.toUpperCase()})`}>{file.split(".").pop()?.toUpperCase()}</a>;
+  return <a className="btn btn-quiet btn-sm" href={B + file + V} download aria-label={`Download ${label} (${file.split(".").pop()?.toUpperCase()})`}>{file.split(".").pop()?.toUpperCase()}</a>;
 }
 
 export function Brand() {
   return (
     <div className="wrap">
       <div className="head"><div className="brand-head"><h1>Brand kit</h1><p className="muted">Eden's logo, colours and type, for writing about Eden, listing $EDEN or building on it.</p></div>
-        <a className="btn btn-quiet" href={B + "eden-wordmark.svg"} download>Download the logo</a></div>
+        <a className="btn btn-quiet" href={B + "eden-wordmark.svg" + V} download>Download the logo</a></div>
 
       <section className="panel brand-hero" aria-label="Logo">
-        <div className="brand-lock"><img className="on-dark-only" src={B + "eden-wordmark.svg"} alt="Eden" /><img className="on-light-only" src={B + "eden-wordmark-onlight.svg"} alt="Eden" /></div>
+        <div className="brand-lock"><img className="on-dark-only" src={B + "eden-wordmark.svg" + V} alt="Eden" /><img className="on-light-only" src={B + "eden-wordmark-onlight.svg" + V} alt="Eden" /></div>
         <p>EDEN in wide, solid capitals. The first E carries first light: the dawn gradient and a gold point where the sunrise breaks.</p>
       </section>
 
@@ -51,7 +53,7 @@ export function Brand() {
         <div className="bk-grid six">
           {SYMBOLS.map((s) => (
             <figure key={s.file} className="bk-tile">
-              <div className={`bk-ground ${s.ground}`}><img src={B + s.file} alt={`Eden symbol, ${s.label.toLowerCase()}`} /></div>
+              <div className={`bk-ground ${s.ground}`}><img src={B + s.file + V} alt={`Eden symbol, ${s.label.toLowerCase()}`} /></div>
               <figcaption><span>{s.label}</span><Download {...s} /></figcaption>
             </figure>
           ))}
@@ -64,7 +66,7 @@ export function Brand() {
         <div className="bk-grid three">
           {WORDMARKS.map((w) => (
             <figure key={w.file} className="bk-tile">
-              <div className={`bk-ground wide ${w.ground}`}><img src={B + w.file} alt={`Eden wordmark, ${w.label.toLowerCase()}`} /></div>
+              <div className={`bk-ground wide ${w.ground}`}><img src={B + w.file + V} alt={`Eden wordmark, ${w.label.toLowerCase()}`} /></div>
               <figcaption><span>{w.label}</span><Download {...w} /></figcaption>
             </figure>
           ))}
@@ -75,13 +77,13 @@ export function Brand() {
       <section className="bk-sec" aria-labelledby="bk-social">
         <div className="sec-row"><h2 id="bk-social">Social and token</h2></div>
         <figure className="bk-tile">
-          <div className="bk-ground banner"><img src={B + SOCIAL[0]!.file} alt="Eden X banner: the wordmark over a planet at first sunrise" /></div>
+          <div className="bk-ground banner"><img src={B + SOCIAL[0]!.file + V} alt="Eden X banner: the wordmark over a planet at first sunrise" /></div>
           <figcaption><span>{SOCIAL[0]!.label} <span className="faint mono">{SOCIAL[0]!.size}</span></span><Download {...SOCIAL[0]!} /></figcaption>
         </figure>
         <div className="bk-grid three">
           {SOCIAL.slice(1).map((s) => (
             <figure key={s.file} className="bk-tile">
-              <div className="bk-ground dark"><img className={s.file.startsWith("x-") || s.file.startsWith("token") ? "round" : "rounded"} src={B + s.file} alt={`Eden ${s.label.toLowerCase()}`} /></div>
+              <div className="bk-ground dark"><img className={s.file.startsWith("x-") || s.file.startsWith("token") ? "round" : "rounded"} src={B + s.file + V} alt={`Eden ${s.label.toLowerCase()}`} /></div>
               <figcaption><span>{s.label} <span className="faint mono">{s.size}</span></span><Download {...s} /></figcaption>
             </figure>
           ))}

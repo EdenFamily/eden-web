@@ -45,7 +45,13 @@ async function post<T>(path: string, body: unknown): Promise<T> {
   return data;
 }
 
+export type BuilderRequest = {
+  onEden: boolean; contract?: string; tokenName?: string; needs: string[]; about?: string; asking?: string;
+  name?: string; email?: string; social?: string; website?: string; wallet?: string; company?: string;
+};
+
 export const api = {
+  builders: (r: BuilderRequest) => post<{ status: string }>("/builders", r),
   tokens: (q: { tab: Tab; q?: string; sort?: string; limit?: number; offset?: number }) => {
     const p = new URLSearchParams({ tab: q.tab, limit: String(q.limit ?? 50), offset: String(q.offset ?? 0) });
     if (q.q) p.set("q", q.q);

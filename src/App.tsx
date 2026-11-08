@@ -12,6 +12,12 @@ import { Portfolio } from "./pages/Portfolio";
 import { Referrals } from "./pages/Referrals";
 import { TokenPage } from "./pages/TokenPage";
 import { LinkResult } from "./pages/LinkResult";
+import { Legal } from "./pages/Legal";
+import { Waiting } from "./pages/Waiting";
+import { Builders } from "./pages/Builders";
+
+/** Before mainnet launch: "/" is the waiting page; only docs, brand kit and the legal pages are open. */
+export const PRELAUNCH = import.meta.env.VITE_PRELAUNCH === "1";
 
 /** A visitor who arrives through ?ref=<code> is asked once, after connecting, to sign the referral binding. */
 function useReferralBinding() {
@@ -37,6 +43,20 @@ function useReferralBinding() {
 
 export function App() {
   const path = usePath();
+  if (PRELAUNCH) return <Prelaunch path={path} />;
+  return <Live path={path} />;
+}
+
+function Prelaunch({ path }: { path: string }) {
+  const page = path.startsWith("/docs") ? <Docs /> : path.startsWith("/brand") ? <Brand />
+    : path.startsWith("/terms") ? <Legal kind="terms" /> : path.startsWith("/privacy") ? <Legal kind="privacy" />
+    : path.startsWith("/builders") ? <Builders /> : null;
+  useEffect(() => { scrollTo(0, 0); }, [path]);
+  if (!page) return <Waiting />;
+  return <><Shell search="" onSearch={() => {}} prelaunch>{page}</Shell><Toast /></>;
+}
+
+function Live({ path }: { path: string }) {
   const [search, setSearch] = useState("");
   useEffect(() => { void restore(); }, []);
   useReferralBinding();
@@ -48,6 +68,9 @@ export function App() {
     : path.startsWith("/docs") ? <Docs />
     : path.startsWith("/brand") ? <Brand />
     : path.startsWith("/link") ? <LinkResult />
+    : path.startsWith("/terms") ? <Legal kind="terms" />
+    : path.startsWith("/privacy") ? <Legal kind="privacy" />
+    : path.startsWith("/builders") ? <Builders />
     : <Explore search={search} />;
   return <><Shell search={search} onSearch={setSearch}>{page}</Shell><Toast /></>;
 }

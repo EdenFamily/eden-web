@@ -7,7 +7,15 @@ import { Link, navigate, usePath } from "./router";
 import { api } from "../lib/api";
 import { PlatformMark } from "./Creator";
 import { Copy, toast, useData } from "./ui";
+import { SiteFooter } from "./Footer";
 
+/** Before launch only the reading pages are open. */
+const PRELAUNCH_NAV = [
+  { to: "/", label: "Home", icon: I.explore },
+  { to: "/docs", label: "Docs", icon: I.docs },
+  { to: "/builders", label: "Builders", icon: I.referrals },
+  { to: "/brand", label: "Brand kit", icon: I.create },
+];
 const NAV = [
   { to: "/", label: "Explore", icon: I.explore },
   { to: "/create", label: "Create a token", icon: I.create },
@@ -86,7 +94,8 @@ function WalletPanel({ onClose }: { onClose: () => void }) {
   );
 }
 
-export function Shell({ children, search, onSearch }: { children: ReactNode; search: string; onSearch: (q: string) => void }) {
+export function Shell({ children, search, onSearch, prelaunch = false }: { children: ReactNode; search: string; onSearch: (q: string) => void; prelaunch?: boolean }) {
+  const nav = prelaunch ? PRELAUNCH_NAV : NAV;
   const path = usePath();
   const w = useWallet();
   const [dark, toggleTheme] = useTheme();
@@ -111,21 +120,23 @@ export function Shell({ children, search, onSearch }: { children: ReactNode; sea
     <>
       <nav className="side" aria-label="Main">
         <Link className="brand" to="/" aria-label="Eden home"><Mark size={22} /></Link>
-        {NAV.map((n) => <Link key={n.to} className="nav" to={n.to} aria-current={active(n.to) ? "page" : undefined}>{n.icon()}{n.label}</Link>)}
-        <span className="nav" aria-disabled="true">{I.perps()}Perps<span className="soon">Soon</span></span>
-        <Link className="nav docs" to="/docs" aria-current={path.startsWith("/docs") ? "page" : undefined}>{I.docs()}Docs</Link>
-        <button className="nav" type="button" onClick={(e) => { e.stopPropagation(); openWallet(); }}>{I.signin()}<span>{w.address ? short(w.address) : "Sign in"}</span></button>
+        {nav.map((n) => <Link key={n.to} className="nav" to={n.to} aria-current={(prelaunch && n.to === "/" ? path === "/" : active(n.to)) ? "page" : undefined}>{n.icon()}{n.label}</Link>)}
+        {!prelaunch && <>
+          <span className="nav" aria-disabled="true">{I.perps()}Perps<span className="soon">Soon</span></span>
+          <Link className="nav docs" to="/docs" aria-current={path.startsWith("/docs") ? "page" : undefined}>{I.docs()}Docs</Link>
+          <button className="nav" type="button" onClick={(e) => { e.stopPropagation(); openWallet(); }}>{I.signin()}<span>{w.address ? short(w.address) : "Sign in"}</span></button>
+        </>}
       </nav>
       <header className="top">
         <Link className="mbrand" to="/" aria-label="Eden home"><Mark size={32} kind="icon" /></Link>
-        <label className="search" htmlFor="q">{I.search()}
+        {prelaunch ? <span className="prelaunch-note"><i aria-hidden="true" />Opening November 9</span> : <label className="search" htmlFor="q">{I.search()}
           <input id="q" ref={searchRef} type="search" placeholder="Search name, ticker or address" autoComplete="off" value={search}
             onChange={(e) => { onSearch(e.target.value); if (path !== "/") navigate("/"); }} />
           <span className="kbd">/</span>
-        </label>
+        </label>}
         <div className="top-end">
           <button className="iconbtn" type="button" onClick={toggleTheme} aria-label={dark ? "Switch to light" : "Switch to dark"}>{dark ? I.sun() : I.moon()}</button>
-          {w.address
+          {prelaunch ? null : w.address
             ? <button className="wbtn" type="button" aria-expanded={open} aria-haspopup="dialog" aria-label="Wallet" onClick={(e) => { e.stopPropagation(); setOpen((o) => !o); }}>
                 {w.wallet?.icon ? <img className="wicon" src={w.wallet.icon} alt="" width={18} height={18} /> : <span className="dot" />}
                 {w.wrongChain && <span className="dot" style={{ background: "var(--down)" }} title="Wrong network" />}{short(w.address)}<span className="bal">{w.balance != null ? (Number(w.balance) / 1e18).toFixed(2) : "…"}</span>
@@ -136,9 +147,9 @@ export function Shell({ children, search, onSearch }: { children: ReactNode; sea
         </div>
       </header>
       <main>{children}</main>
-      <footer><span>Eden is a non-custodial interface on Elysium. Tokens are created by their creators. Nothing here is financial advice.</span><span className="foot-links"><Link to="/docs">Docs</Link><Link to="/brand">Brand kit</Link><span className="mono">Chain 99901 · HYPE</span></span></footer>
+      <footer><SiteFooter prelaunch={prelaunch} /></footer>
       <nav className="mbar" aria-label="Main">
-        {NAV.map((n) => <Link key={n.to} to={n.to} aria-current={active(n.to) ? "page" : undefined}>{n.icon(20)}{n.label.replace(" a token", "")}</Link>)}
+        {nav.map((n) => <Link key={n.to} to={n.to} aria-current={active(n.to) ? "page" : undefined}>{n.icon(20)}{n.label.replace(" a token", "")}</Link>)}
       </nav>
     </>
   );

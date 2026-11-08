@@ -170,11 +170,21 @@ export async function switchToElysium(): Promise<void> {
 
 /** Sends a contract call with Eden's marker appended, waits for the receipt, and refreshes the balance. */
 export async function send<A extends Abi>(to: Address, abi: A, functionName: string, args: readonly unknown[], value?: bigint) {
+  return sendData(to, encodeFunctionData({ abi, functionName, args } as Parameters<typeof encodeFunctionData>[0]), value);
+}
+
+/**
+ * Sends prepared calldata (Eden's marker appended), waits for the receipt, and refreshes the balance. The call is
+ * simulated first, so a transaction that would revert (a price that moved past the slippage) fails here, before the
+ * wallet opens and before any gas is spent.
+ */
+export async function sendData(to: Address, calldata: Hex, value?: bigint) {
   const { client, address } = state;
   if (!client || !address) throw new Error("Connect a wallet first.");
   if (state.wrongChain) await switchToElysium();
   if (state.wrongChain) throw new Error("Switch your wallet to Elysium first.");
-  const data = (encodeFunctionData({ abi, functionName, args } as Parameters<typeof encodeFunctionData>[0]) + EDEN_MARKER) as Hex;
+  const data = (calldata + EDEN_MARKER) as Hex;
+  await publicClient.call({ account: address, to, data, value });
   const hash = await client.sendTransaction({ account: address, chain: elysium, to, data, value });
   const receipt = await publicClient.waitForTransactionReceipt({ hash });
   await refreshBalance();
@@ -186,6 +196,14 @@ export async function signMessage(message: string): Promise<Hex> {
   const { client, address } = state;
   if (!client || !address) throw new Error("Connect a wallet first.");
   return client.signMessage({ account: address, message });
+}
+
+/** EIP-712 signature (a Permit2 permit): no transaction, no gas. */
+export async function signTypedData(typed: Omit<Parameters<WalletClient["signTypedData"]>[0], "account">): Promise<Hex> {
+  const { client, address } = state;
+  if (!client || !address) throw new Error("Connect a wallet first.");
+  if (state.wrongChain) await switchToElysium();
+  return client.signTypedData({ ...typed, account: address } as Parameters<WalletClient["signTypedData"]>[0]);
 }
 
 /** Reconnects silently to the last wallet if it still trusts Eden (no popup). */

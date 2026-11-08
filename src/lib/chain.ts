@@ -1,5 +1,6 @@
 import { createPublicClient, defineChain, http, parseAbi, type Address } from "viem";
 import { MAINNET } from "./deployment";
+export { UNISWAP } from "./deployment";
 
 const env = import.meta.env;
 
@@ -15,6 +16,8 @@ export const contracts = {
   factory: (env.VITE_FACTORY || MAINNET.factory) as Address,
   launchAndBuy: (env.VITE_LAUNCHANDBUY || MAINNET.launchAndBuy) as Address,
   feeEscrow: (env.VITE_FEEESCROW || MAINNET.feeEscrow) as Address,
+  /** the hook every graduated pool is keyed by; a dev chain has its own */
+  memeHook: (env.VITE_MEMEHOOK || MAINNET.memeHook) as Address,
 };
 export const LAUNCH_FEE_WEI = BigInt(env.VITE_LAUNCH_FEE_WEI ?? "500000000000000");
 

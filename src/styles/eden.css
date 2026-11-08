@@ -577,3 +577,12 @@ footer { padding-top: 56px; }
   .tc-cap .v { order: 2; text-align: left; font-size: 16px; }
   .tc-cap .sub { order: 3; min-width: 0; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 }
+
+/* slippage */
+.slip-btn { font: 500 13px var(--mono); color: var(--ink); background: none; border: 0; padding: 0; cursor: pointer; }
+.slip-btn span { color: var(--muted); font-size: 10px; }
+.slip-edit { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.slip-edit .chip { height: 30px; padding: 0 10px; }
+.slip-edit .chip[aria-pressed="true"] { color: var(--ink); border-color: var(--accent); }
+.slip-custom { display: inline-flex; align-items: center; gap: 4px; font: 500 13px var(--mono); color: var(--muted); }
+.slip-custom input { width: 64px; height: 30px; padding: 0 8px; border-radius: var(--r); border: 1px solid var(--rule-2); background: var(--well); color: var(--ink); font: inherit; }

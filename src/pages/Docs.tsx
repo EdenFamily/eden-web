@@ -92,6 +92,7 @@ export function Docs() {
             <h2>Graduation</h2>
             <p>At graduation the curve closes. Its {GRADUATION_HYPE.toFixed(2)} HYPE and {pct(SUPPLY_SPLIT.pool)} of the supply seed a <b>Uniswap V4 pool</b> at the curve's final price, so there is no jump. The remaining {pct(SUPPLY_SPLIT.locked)} of the supply can't be paired at that price and is locked with the liquidity.</p>
             <p>The pool's liquidity and the {pct(SUPPLY_SPLIT.locked)} are <b>locked forever</b>: nobody, including the creator and Eden, can remove them.</p>
+            <p>You keep trading a graduated token on its Eden page, in the same buy and sell panel: Eden routes the trade through Uniswap's Universal Router. Buying needs no approval. Your first sell of a token asks for one approval and one signature (no gas); after that, every sell is a single transaction.</p>
             <div className="panel tex tscroll">
               <table className="dtable">
                 <thead><tr><th>Supply at graduation</th><th>Share</th></tr></thead>
@@ -124,7 +125,7 @@ export function Docs() {
           <section id="protection">
             <h2>Launch protection</h2>
             <p>Bots that buy right after launch pay a <b>snipe tax</b>: 99% at the moment of launch, falling to zero over 15 seconds. The creator's initial buy and up to 31 bundle wallets the creator lists are exempt, so a team can buy at launch without being sniped.</p>
-            <p>Every swap is checked against a minimum you set through slippage (1% by default). If the price moves further than that before your trade lands, the trade does not happen and you only pay gas.</p>
+            <p>Every swap is checked against a minimum you set through slippage (3% by default, adjustable in the trade panel). Eden test-runs each trade before your wallet opens, so if the price has already moved past your slippage, nothing is sent and you pay nothing. If it moves while your trade is landing, the trade does not happen and you only pay gas.</p>
           </section>
 
           <section id="create">

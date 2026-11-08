@@ -1,17 +1,13 @@
-import { useEffect, useMemo, useState } from "react";
-import { formatUnits, maxUint256, parseUnits, type Address } from "viem";
+import { useState } from "react";
 import { api, type Candle, type Token } from "../lib/api";
-import { curveAbi, erc20Abi, publicClient } from "../lib/chain";
-import { quoteBuy, quoteSell, readCurve, type CurveState } from "../lib/curve";
-import { ago, amount, fromWei, hype, pct, short, usd, usdFull } from "../lib/format";
+import { ago, amount, fromWei, pct, short, usd, usdFull } from "../lib/format";
 import { useLive } from "../lib/live";
-import { send, useWallet } from "../lib/wallet";
 import { Creator, devWallet } from "../components/Creator";
 import { I } from "../components/icons";
 import { Link } from "../components/router";
-import { askToConnect } from "../components/Shell";
 import { ShareButton } from "../components/Share";
-import { Copy, TokenImage, toast, useData } from "../components/ui";
+import { TradePanel } from "../components/TradePanel";
+import { Copy, TokenImage, useData } from "../components/ui";
 
 const INTERVALS = ["1m", "5m", "15m", "1h", "4h", "1d"] as const;
 const SPAN_H: Record<string, number> = { "1m": 2, "5m": 8, "15m": 24, "1h": 72, "4h": 24 * 10, "1d": 24 * 60 };
@@ -49,75 +45,6 @@ function Chart({ candles, toUsd, unit, gradLine }: { candles: Candle[]; toUsd: (
       <text x={W - padR + 8} y={y(last.c) + 4} fill="var(--on-accent)" fontSize="11" fontWeight="600" fontFamily="var(--mono)">{fmt(last.c)}</text>
       {[0, 0.25, 0.5, 0.75, 1].map((f) => { const c = cs[Math.min(cs.length - 1, Math.round(f * (cs.length - 1)))]!; return <text key={f} x={Math.min(W - padR - 20, Math.max(20, (f * (cs.length - 1) + 0.5) * cw))} y={H - 6} fill="var(--faint)" fontSize="11" fontFamily="var(--mono)" textAnchor="middle">{c.t.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</text>; })}
     </svg>
-  );
-}
-
-function TradePanel({ t }: { t: Token }) {
-  const w = useWallet();
-  const [side, setSide] = useState<"buy" | "sell">("buy");
-  const [input, setInput] = useState("0.5");
-  const [curve, setCurve] = useState<CurveState>();
-  const [held, setHeld] = useState<bigint>(0n);
-  const [busy, setBusy] = useState("");
-  const onCurve = t.phase === "curve";
-  useEffect(() => { if (onCurve) void readCurve(t.curve as Address).then(setCurve); }, [t.curve, t.real_quote_reserve, onCurve]);
-  useEffect(() => {
-    if (!w.address) return setHeld(0n);
-    void publicClient.readContract({ address: t.address as Address, abi: erc20Abi, functionName: "balanceOf", args: [w.address] }).then(setHeld);
-  }, [w.address, t.address, busy]);
-  const amountIn = useMemo(() => { try { return input ? parseUnits(input, 18) : 0n; } catch { return 0n; } }, [input]);
-  const q = curve && amountIn > 0n ? (side === "buy" ? quoteBuy(curve, amountIn) : quoteSell(curve, amountIn)) : undefined;
-  const minOut = q ? (q.out * 99n) / 100n : 0n;
-  const balance = side === "buy" ? w.balance ?? 0n : held;
-  const tooMuch = amountIn > balance;
-  async function go() {
-    if (!w.address) return askToConnect();
-    if (!q) return;
-    try {
-      if (side === "buy") {
-        setBusy("Confirm in your wallet");
-        await send(t.curve as Address, curveAbi, "buy", [amountIn, minOut, w.address], amountIn);
-        toast(`Bought ${amount(Number(formatUnits(q.out, 18)))} $${t.symbol}`);
-      } else {
-        const allowance = await publicClient.readContract({ address: t.address as Address, abi: erc20Abi, functionName: "allowance", args: [w.address, t.curve as Address] });
-        if (allowance < amountIn) { setBusy("Approve in your wallet (once per token)"); await send(t.address as Address, erc20Abi, "approve", [t.curve, maxUint256]); }
-        setBusy("Confirm in your wallet");
-        await send(t.curve as Address, curveAbi, "sell", [amountIn, minOut, w.address]);
-        toast(`Sold for ${hype(Number(formatUnits(q.out, 18)))}`);
-      }
-      setInput("");
-    } catch (e) {
-      const m = (e as Error).message;
-      toast(/rejected|denied/i.test(m) ? "Cancelled in your wallet." : /Slippage/i.test(m) ? "Price moved more than 1%. Nothing was traded; try again." : m.split("\n")[0]!, "err");
-    } finally { setBusy(""); }
-  }
-  const presets = side === "buy" ? ["0.1", "0.5", "1", "5"] : ["25%", "50%", "75%", "Max"];
-  return (
-    <aside className="panel tex trade" aria-label="Trade">
-      <div className="seg">{(["buy", "sell"] as const).map((s) => <button key={s} type="button" aria-pressed={side === s} onClick={() => { setSide(s); setInput(""); }}>{s === "buy" ? "Buy" : "Sell"}</button>)}</div>
-      {!onCurve ? (
-        <p className="note">This token graduated. It now trades on its Uniswap V4 pool; trading it from Eden comes in the next release.</p>
-      ) : (<>
-        <div className="box">
-          <div className="box-row"><span className="muted" style={{ fontSize: 13 }}>You pay</span><span className="muted mono" style={{ fontSize: 12 }}>Balance {side === "buy" ? hype(fromWei(w.balance ?? 0n)) : `${amount(fromWei(held))} ${t.symbol}`}</span></div>
-          <div className="box-row"><input id="amt" className="amt" inputMode="decimal" placeholder="0" value={input} onChange={(e) => setInput(e.target.value.replace(/[^0-9.]/g, ""))} aria-label="Amount to pay" />
-            <span className="asset">{side === "buy" ? <><i style={{ background: "var(--accent)", color: "var(--on-accent)" }}>H</i>HYPE</> : <><TokenImage address={t.address} logo={t.logo} size={22} label={t.name} />{t.symbol}</>}</span></div>
-          <div className="chips">{presets.map((p) => <button key={p} className="chip" type="button" onClick={() => setInput(p.endsWith("%") || p === "Max" ? formatUnits((held * BigInt(p === "Max" ? 100 : parseInt(p))) / 100n, 18) : p)}>{p}</button>)}</div>
-        </div>
-        <button className="flip" type="button" aria-label="Switch buy and sell" onClick={() => { setSide(side === "buy" ? "sell" : "buy"); setInput(""); }}>{I.flip()}</button>
-        <div className="box"><span className="muted" style={{ fontSize: 13 }}>You get</span>
-          <div className="box-row"><span className="amt mono">{q ? (side === "buy" ? amount(Number(formatUnits(q.out, 18))) : Number(formatUnits(q.out, 18)).toFixed(4)) : "—"}</span>
-            <span className="asset">{side === "buy" ? <><TokenImage address={t.address} logo={t.logo} size={22} label={t.name} />{t.symbol}</> : <><i style={{ background: "var(--accent)", color: "var(--on-accent)" }}>H</i>HYPE</>}</span></div></div>
-        <div className="kv"><span>Price impact</span><b>{q ? (q.impactBps / 100).toFixed(2) + "%" : "—"}</b></div>
-        <div className="kv"><span>Minimum received</span><b>{q ? (side === "buy" ? `${amount(Number(formatUnits(minOut, 18)))} ${t.symbol}` : hype(Number(formatUnits(minOut, 18)))) : "—"}</b></div>
-        <div className="kv"><span>Fees</span><b>{t.curve_fee_bps / 100}% curve + {t.creator_tax_bps / 100}% creator</b></div>
-        <div className="kv"><span>Route</span><b>Bonding curve</b></div>
-        {w.address && tooMuch && amountIn > 0n && <p className="err">That's more than your balance.</p>}
-        <button className="btn btn-primary btn-block" type="button" style={{ height: 48 }} disabled={!!busy || (!!w.address && (!q || tooMuch))} onClick={() => void go()}>
-          {busy || (!w.address ? "Sign in" : !q ? "Enter an amount" : side === "buy" ? `Buy ${hype(Number(input))}` : `Sell ${amount(Number(input))} ${t.symbol}`)}
-        </button>
-      </>)}
-    </aside>
   );
 }
 

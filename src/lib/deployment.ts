@@ -13,6 +13,13 @@ export const MAINNET = {
   launchDeployer: "0xa36163be33e7795387c7e40c0a9505e27072aa1a",
 } as const satisfies Record<string, Address>;
 
+/** Uniswap on Elysium: V4 PoolManager, Permit2, and the Universal Router v2.2.0 that graduated tokens trade through. */
+export const UNISWAP = {
+  poolManager: "0xE2e105d3F7209A9DA11f83cCf3E7398a753823F1",
+  permit2: "0x000000000022D473030F116dDEE9F6B43aC78BA3",
+  universalRouter: "0x1B341FDD55d56F8E08409A2C25DDFad93Eb03C1a",
+} as const satisfies Record<string, Address>;
+
 /** The table in the docs: what each contract does, in the reader's words. */
 export const CONTRACT_ROWS: [string, Address][] = [
   ["Launch factory", MAINNET.factory],

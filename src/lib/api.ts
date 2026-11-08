@@ -3,6 +3,8 @@ export type Token = {
   address: string; curve: string; creator: string; name: string; symbol: string; logo: string; description: string;
   socials: Partial<Record<"twitter" | "telegram" | "discord" | "website" | "farcaster", string>>;
   /** HYPE saved toward this token's perps listing and the listing target; absent until the server reports them */
+  /** the token's Uniswap V4 pool id once it graduated */
+  pool_id?: string | null;
   perps_fund_hype?: number | string; perps_fund_target_hype?: number | string;
   supply: string; graduation_threshold: string; real_quote_reserve: string; price_quote: string; market_cap_quote: string;
   curve_fee_bps: number; creator_tax_bps: number; buyback_enabled: boolean; phase: "curve" | "swept" | "pool";

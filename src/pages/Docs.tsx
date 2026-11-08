@@ -2,6 +2,7 @@ import { Fragment, useEffect, useState } from "react";
 import { elysium } from "../lib/chain";
 import { CONTRACT_ROWS, DEPLOYMENT_JSON_URL, GRADUATION_HYPE, PHANTOM_HYPE, SOURCE_URL, SUPPLY_SPLIT } from "../lib/deployment";
 import { DEV_SECTIONS, DocsDevelopers } from "./DocsDevelopers";
+import { useGraduationMcapLabel, useHypeUsd } from "../lib/graduation";
 import { Link } from "../components/router";
 
 const pct = (v: number) => (v * 100).toFixed(1) + "%";
@@ -22,32 +23,37 @@ const SECTIONS = [
   ...DEV_SECTIONS,
 ] as const;
 
-/** Market cap (in HYPE) against HYPE raised on a fresh curve: 76.05 HYPE virtual reserve, graduation at 190.12 HYPE. */
+/** Market cap in USD (at today's HYPE price) against HYPE raised on a fresh curve, launch config 0. */
 function CurveFigure() {
-  const W = 640, H = 220, pl = 52, pb = 30, pt = 14, pr = 120, phantom = PHANTOM_HYPE, grad = GRADUATION_HYPE;
-  const mcap = (raised: number) => (phantom + raised) ** 2 / phantom;
+  const k = useHypeUsd() ?? 77.29;
+  const W = 640, H = 220, pl = 56, pb = 30, pt = 14, pr = 120, phantom = PHANTOM_HYPE, grad = GRADUATION_HYPE;
+  const mcap = (raised: number) => ((phantom + raised) ** 2 / phantom) * k;
   const maxY = mcap(grad) * 1.08;
+  const step = [5e3, 1e4, 2e4, 2.5e4, 5e4, 1e5, 2e5, 5e5].find((v) => maxY / v <= 4.5) ?? 1e6;
+  const ticks = Array.from({ length: Math.floor(maxY / step) + 1 }, (_, i) => i * step);
+  const money = (v: number) => (v >= 1e6 ? `$${(v / 1e6).toFixed(1)}M` : v >= 1e4 ? `$${Math.round(v / 1000)}K` : `$${Math.round(v / 100) / 10}K`).replace(".0K", "K");
   const x = (r: number) => pl + (r / grad) * (W - pl - pr), y = (m: number) => pt + (1 - m / maxY) * (H - pt - pb);
   const pts = Array.from({ length: 61 }, (_, i) => (i / 60) * grad).map((r) => `${x(r)},${y(mcap(r))}`).join(" ");
   return (
     <figure className="panel tex curve-fig" style={{ margin: 0 }}>
-      <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Market cap rises from 76 to about 932 HYPE as 190.1 HYPE is raised">
-        {[0, 250, 500, 750].map((m) => <g key={m}><line x1={pl} x2={x(grad)} y1={y(m)} y2={y(m)} stroke="var(--rule)" /><text x={pl - 8} y={y(m) + 4} textAnchor="end" fill="var(--faint)" fontSize="11" fontFamily="var(--mono)">{m}</text></g>)}
-        {[0, 50, 100, 150, 190.1].map((r) => <text key={r} x={x(r)} y={H - 10} textAnchor="middle" fill="var(--faint)" fontSize="11" fontFamily="var(--mono)">{r}</text>)}
+      <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`Market cap rises from about ${money(mcap(0))} to about ${money(mcap(grad))} as ${grad.toFixed(1)} HYPE is raised`}>
+        {ticks.map((m) => <g key={m}><line x1={pl} x2={x(grad)} y1={y(m)} y2={y(m)} stroke="var(--rule)" /><text x={pl - 8} y={y(m) + 4} textAnchor="end" fill="var(--faint)" fontSize="11" fontFamily="var(--mono)">{m === 0 ? "$0" : money(m)}</text></g>)}
+        {[0, 50, 100, 150, Math.round(grad * 10) / 10].map((r) => <text key={r} x={x(r)} y={H - 10} textAnchor="middle" fill="var(--faint)" fontSize="11" fontFamily="var(--mono)">{r}</text>)}
         <polyline points={pts} fill="none" stroke="var(--accent)" strokeWidth="2" />
         <line x1={x(grad)} x2={x(grad)} y1={pt} y2={H - pb} stroke="var(--gold)" strokeDasharray="4 4" />
         <circle cx={x(grad)} cy={y(mcap(grad))} r="4" fill="var(--gold)" />
-        <text x={x(grad) + 10} y={y(mcap(grad)) + 4} fill="var(--gold)" fontSize="11" fontFamily="var(--mono)">graduates</text><text x={x(grad) + 10} y={y(mcap(grad)) + 18} fill="var(--gold)" fontSize="11" fontFamily="var(--mono)">≈932 HYPE</text>
+        <text x={x(grad) + 10} y={y(mcap(grad)) + 4} fill="var(--gold)" fontSize="11" fontFamily="var(--mono)">graduates</text><text x={x(grad) + 10} y={y(mcap(grad)) + 18} fill="var(--gold)" fontSize="11" fontFamily="var(--mono)">≈{money(mcap(grad))}</text>
         <circle cx={x(0)} cy={y(mcap(0))} r="4" fill="var(--accent)" />
-        <text x={x(0) + 10} y={y(mcap(0)) + 18} fill="var(--muted)" fontSize="11" fontFamily="var(--mono)">starts at 76 HYPE</text>
+        <text x={x(0) + 10} y={y(mcap(0)) + 18} fill="var(--muted)" fontSize="11" fontFamily="var(--mono)">starts at ≈{money(mcap(0))}</text>
       </svg>
-      <figcaption className="note" style={{ marginTop: 8 }}>Market cap in HYPE (vertical) against HYPE raised on the curve (horizontal).</figcaption>
+      <figcaption className="note" style={{ marginTop: 8 }}>Market cap in US dollars at today's HYPE price (vertical) against HYPE raised on the curve (horizontal).</figcaption>
     </figure>
   );
 }
 
 export function Docs() {
   const [active, setActive] = useState<string>("overview");
+  const gradLabel = useGraduationMcapLabel();
   useEffect(() => {
     const els = SECTIONS.map(([id]) => document.getElementById(id)).filter(Boolean) as HTMLElement[];
     const io = new IntersectionObserver((entries) => {
@@ -79,7 +85,7 @@ export function Docs() {
             <div className="facts">
               <div className="panel tex fact"><span className="lbl">Supply</span><span className="v">1B</span></div>
               <div className="panel tex fact"><span className="lbl">Paired with</span><span className="v">HYPE</span></div>
-              <div className="panel tex fact"><span className="lbl">Graduates at</span><span className="v">≈$72K</span></div>
+              <div className="panel tex fact"><span className="lbl">Graduates at</span><span className="v">{gradLabel}</span></div>
               <div className="panel tex fact"><span className="lbl">Launch fee</span><span className="v">0.0005 HYPE</span></div>
             </div>
             <p>Eden is a non-custodial interface. Your wallet signs every transaction, Eden never holds your funds, and every token is created by its creator, not by Eden.</p>
@@ -107,7 +113,7 @@ export function Docs() {
                 </tbody>
               </table>
             </div>
-            <p>Graduation lands at a market cap of about 932 HYPE, about $72K at today's HYPE price. Eden may retune the curve for new launches as HYPE's price moves; tokens already trading keep the curve they launched with.</p>
+            <p>Graduation lands at a market cap of about {gradLabel.slice(1)} at today's HYPE price. Eden may retune the curve for new launches as HYPE's price moves; tokens already trading keep the curve they launched with.</p>
           </section>
 
           <section id="fees">
@@ -139,7 +145,7 @@ export function Docs() {
               <li><b>Economics.</b> Choose your creator fee, an optional initial buy and whether buyback is on.</li>
               <li><b>Launch.</b> One transaction creates the token and, if you chose one, makes your initial buy in the same block, before anyone else can trade.</li>
             </ol>
-            <p>Each creator can launch up to <b>5 tokens a month</b>.</p>
+            <p>Up to 2 launches a day and 10 a month per creator.</p>
           </section>
 
           <section id="identity">
@@ -149,8 +155,8 @@ export function Docs() {
           </section>
 
           <section id="x-launch">
-            <h2>Launch from X <span className="soon">Soon</span></h2>
-            <p>Launch a token without opening Eden: post on X and tag <b>@EdenOnElysium</b> with a ticker and a name, and attach an image. First link your X account to your Eden wallet from the wallet menu; launches from X accounts that aren't linked are not made.</p>
+            <h2>Launch from X</h2>
+            <p>Launch a token without opening Eden: post on X and tag <b>@EdenOnElysium</b> with a ticker and a name, and attach an image. Link your X account to your Eden wallet first, from the wallet menu. An X account that hasn't linked a wallet gets one launch from X; creator fees from it go to Eden. Link your X to keep launching and earn the fees.</p>
             <div className="panel tex doc-example"><span className="mono">@EdenOnElysium $FROG Frog</span></div>
             <ul>
               <li><b>Ticker</b> is the word after <span className="mono">$</span> (1–10 letters or digits); <b>name</b> is the rest of the text (up to 32 characters). The attached image becomes the token's logo; a post without an image doesn't launch.</li>
@@ -158,7 +164,7 @@ export function Docs() {
               <li>Eden launches the token and replies to you with its contract address. Replies carry no links, so always check the contract address on Eden before you trade.</li>
               <li><b>Creator fees go to your linked Eden wallet</b> from the first trade: 70% of the trading fee, the same as launching on the site.</li>
               <li>Launching from X costs you nothing; Eden pays the launch.</li>
-              <li><b>Who can launch:</b> verified X accounts at least 30 days old, linked to an Eden wallet. Your 5 launches a month are shared between X and the site. One launch per post, and a ticker can't be launched again within 24 hours.</li>
+              <li><b>Who can launch:</b> verified X accounts at least 30 days old, linked to an Eden wallet. Up to 2 launches a day and 10 a month per creator, shared between X and the site. One launch per post, and a ticker can't be launched again within 24 hours.</li>
             </ul>
           </section>
 

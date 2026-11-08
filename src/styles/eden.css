@@ -794,3 +794,11 @@ main:focus { outline: none; }
   .mcap-box .lbl { margin-right: auto; }
 }
 @media (max-width: 860px) { .wrap { gap: 28px; } }
+
+/* Link X: the wallet menu's next step, and the nudge on Create */
+.opt.opt-cta { border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent); }
+.linkx { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid var(--rule-2); border-radius: var(--r); background: var(--well); font-size: 13.5px; line-height: 1.45; color: var(--muted); }
+.linkx b { color: var(--ink); font-weight: 600; }
+.linkx-ic { flex: none; width: 30px; height: 30px; display: grid; place-items: center; border-radius: 50%; background: var(--ink); color: var(--bg); }
+.linkx .btn { flex: none; margin-left: auto; }
+@media (max-width: 560px) { .linkx { flex-wrap: wrap; } .linkx .btn { margin-left: 42px; } }

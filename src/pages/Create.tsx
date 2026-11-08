@@ -8,8 +8,10 @@ import { navigate } from "../components/router";
 import { askToConnect } from "../components/Shell";
 import { toast, useData } from "../components/ui";
 import { api } from "../lib/api";
-import { GRADUATION_HYPE } from "../lib/deployment";
 import { prepareImage, uploadImage } from "../lib/upload";
+import { ipfsImage } from "../lib/art";
+import { useGraduationMcapLabel } from "../lib/graduation";
+import { LinkXNudge } from "../components/LinkXNudge";
 
 const FEES = [0, 1, 2, 3, 5, 10];
 const ZERO32 = ("0x" + "0".repeat(64)) as Hex;
@@ -29,8 +31,13 @@ export function Create() {
   const [bundle, setBundle] = useState("");
   const [err, setErr] = useState("");
   const [busy, setBusy] = useState("");
+  const gradLabel = useGraduationMcapLabel();
   const quota = useData(() => (w.address ? api.quota(w.address.toLowerCase()) : Promise.resolve(undefined)), [w.address]);
-  const used = quota.data?.used ?? 0, limit = quota.data?.limit ?? 5, full = !!quota.data && used >= limit;
+  // Up to 2 launches a UTC day and 10 a UTC month per creator (the server counts both).
+  const used = quota.data?.used ?? 0, limit = quota.data?.limit ?? 10;
+  const usedToday = quota.data?.usedToday ?? 0, dailyLimit = quota.data?.dailyLimit ?? 2;
+  const monthFull = !!quota.data && used >= limit, dayFull = !!quota.data && !monthFull && usedToday >= dailyLimit;
+  const full = monthFull || dayFull;
   const set = (k: keyof typeof f) => (e: { target: { value: string } }) =>
     setF({ ...f, [k]: k === "ticker" ? e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "") : e.target.value });
   const buyHype = Number(buy) || 0;
@@ -48,7 +55,7 @@ export function Create() {
       mine({ preview: URL.createObjectURL(prepared) });
       const logo = await uploadImage(prepared, (p) => mine({ progress: p }));
       // keep showing the local, already-cropped preview: it is the same image, and it never waits on an IPFS gateway
-      mine({ logo, progress: 1 });
+      mine({ logo, progress: 1, preview: ipfsImage(logo) });
     } catch (e) { mine({ error: (e as Error).message }); }
   }
 
@@ -77,7 +84,7 @@ export function Create() {
   async function launch(e: FormEvent) {
     e.preventDefault();
     if (!w.address) return askToConnect();
-    if (full) return setErr(`You've launched ${limit} tokens this month. You can launch again on ${new Date(quota.data!.resetsAt).toLocaleDateString()}.`);
+    if (full) return setErr(dayFull ? `You've used today's ${dailyLimit} launches. You can launch again ${resets}.` : `You've used all ${limit} launches for this month. You can launch again ${resets}.`);
     if (badBundle.length) return setErr(`Not an address: ${badBundle[0]}`);
     if (bundleList.length > 31) return setErr("Up to 31 bundle wallets.");
     if (!img?.logo) { setStep(1); return setErr("Add an image to continue."); }
@@ -115,8 +122,10 @@ export function Create() {
   const hypeFmt = (n: number) => n.toFixed(4).replace(/0+$/, "").replace(/\.$/, "");
   const balance = w.balance != null ? Number(w.balance) / 1e18 : undefined;
   const short4Balance = balance != null && total > balance;
-  const resets = quota.data ? new Date(quota.data.resetsAt).toLocaleDateString([], { month: "long", day: "numeric", timeZone: "UTC" }) : "";
-  const limitNote = full && <div className="notice" role="status"><i aria-hidden="true" /><span><b>You've used all {limit} launches for this month.</b> You can launch again on {resets}. <a href="/docs#create">How launches are counted</a></span></div>;
+  const resets = !quota.data ? "" : dayFull
+    ? `at ${new Date(quota.data.dailyResetsAt!).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
+    : `on ${new Date(quota.data.resetsAt).toLocaleDateString([], { month: "long", day: "numeric", timeZone: "UTC" })}`;
+  const limitNote = full && <div className="notice" role="status"><i aria-hidden="true" /><span><b>{dayFull ? `You've used today's ${dailyLimit} launches.` : `You've used all ${limit} launches for this month.`}</b> You can launch again {resets}. <a href="/docs#create">How launches are counted</a></span></div>;
   return (
     <div className="wrap">
       <div className="head"><h1>Launch a token</h1>
@@ -126,6 +135,7 @@ export function Create() {
       <div className="cgrid">
         {step === 1 ? (
           <form className="panel tex form" onSubmit={next} noValidate>
+            <LinkXNudge />
             {limitNote}
             <div className="field"><div className="field-row"><span id="img-l">Image<span className="req">Required</span></span><span className="c">Square works best</span></div>
               <div className={`drop ${over ? "over" : ""} ${fieldErr.img ? "bad" : ""}`} {...drop}>
@@ -182,8 +192,8 @@ export function Create() {
             {short4Balance && <p className="field-err">Your wallet has {balance!.toFixed(2)} HYPE. Lower the initial buy or add HYPE.</p>}
             {err && <p className="err" role="alert" style={{ margin: 0 }}>{err}</p>}
             <div className="formfoot"><button className="btn btn-quiet" type="button" onClick={() => setStep(1)}>Back</button>
-              <span className="help mono">{quota.data ? `${Math.min(used, limit)} of ${limit} launches used this month` : ""}</span>
-              <button className="btn btn-primary" type="submit" disabled={!!busy || full || !img?.logo || (!!w.address && short4Balance)}>{busy || (!w.address ? "Connect wallet to launch" : full ? `Launch again on ${resets}` : `Launch $${f.ticker}`)}</button></div>
+              <span className="help mono">{quota.data ? `${Math.min(usedToday, dailyLimit)} of ${dailyLimit} today · ${Math.min(used, limit)} of ${limit} this month` : ""}</span>
+              <button className="btn btn-primary" type="submit" disabled={!!busy || full || !img?.logo || (!!w.address && short4Balance)}>{busy || (!w.address ? "Connect wallet to launch" : full ? `Launch again ${resets}` : `Launch $${f.ticker}`)}</button></div>
           </form>
         )}
         <aside className="panel tex board" aria-label="Preview"><span className="lbl">Preview</span>
@@ -191,7 +201,7 @@ export function Create() {
             <div style={{ minWidth: 0 }}><div style={{ font: "600 18px var(--sans)", overflowWrap: "anywhere" }}>{f.name || "Your token"}</div><div className="mono muted">${f.ticker || "TICKER"} · HYPE pair</div>
               {w.address && <div className="muted" style={{ fontSize: 13, marginTop: 4 }}>by <span className="mono">{short(w.address)}</span></div>}</div></div>
           <p className="muted" style={{ margin: 0, overflowWrap: "anywhere" }}>{f.description || "A line or two about the token goes here."}</p>
-          <dl><div><dt>Supply</dt><dd>1,000,000,000</dd></div><div><dt>Graduates at</dt><dd>{GRADUATION_HYPE.toFixed(2)} HYPE</dd></div><div><dt>Creator fee</dt><dd>{fee}%</dd></div><div><dt>Launch fee</dt><dd>{hypeFmt(launchFee)} HYPE</dd></div></dl>
+          <dl><div><dt>Supply</dt><dd>1,000,000,000</dd></div><div><dt>Graduates at</dt><dd>{gradLabel} market cap</dd></div><div><dt>Creator fee</dt><dd>{fee}%</dd></div><div><dt>Launch fee</dt><dd>{hypeFmt(launchFee)} HYPE</dd></div></dl>
         </aside>
       </div>
     </div>

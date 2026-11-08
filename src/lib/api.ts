@@ -73,7 +73,7 @@ export const api = {
   walletTrades: (w: string) => get<{ trades: Trade[] }>(`/wallets/${w}/trades?limit=50`),
   stats: () => get<{ stats: Record<string, string | number>; hypeUsd: number | null }>("/stats"),
   creator: (a: string) => get<CreatorLinks>(`/creators/${a}`),
-  quota: (a: string) => get<{ used: number; limit: number; resetsAt: string }>(`/creators/${a}/quota`),
+  quota: (a: string) => get<{ used: number; limit: number; resetsAt: string; usedToday?: number; dailyLimit?: number; dailyResetsAt?: string }>(`/creators/${a}/quota`),
   oauthPlatforms: () => get<{ x: boolean; tiktok: boolean }>("/creators/oauth/platforms"),
   oauthStartUrl: (platform: "x" | "tiktok", wallet: string) => `${BASE}/creators/oauth/${platform}/start?wallet=${wallet}`,
   linkMessage: (offer: string) => get<{ platform: "x" | "tiktok"; handle: string; wallet: string; message: string }>(`/creators/links/message?offer=${offer}`),

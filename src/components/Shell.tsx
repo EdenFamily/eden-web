@@ -64,9 +64,9 @@ function LinkedAccounts({ wallet }: { wallet: string }) {
           ? <div key={platform} className="opt">{icon}<span className="vx" style={{ fontSize: 13 }}>@{linked.handle}</span><span className="end ok">Linked</span></div>
           : !platforms.data?.[platform]
             ? <button key={platform} className="opt" type="button" disabled>{icon}Link {platform === "x" ? "X" : "TikTok"}<span className="soon" style={{ marginLeft: "auto" }}>Soon</span></button>
-            : <button key={platform} className="opt" type="button" onClick={() => { window.location.href = api.oauthStartUrl(platform, wallet); }}>{icon}Link {platform === "x" ? "X" : "TikTok"}<span className="end ok">Connect</span></button>;
+            : <button key={platform} className={`opt ${platform === "x" ? "opt-cta" : ""}`} type="button" onClick={() => { window.location.href = api.oauthStartUrl(platform, wallet); }}>{icon}Link {platform === "x" ? "X" : "TikTok"}<span className="end ok">Connect</span></button>;
       })}
-      <p className="help" style={{ fontSize: 12 }}>A linked handle shows as the creator on your tokens. Each account links to one Eden wallet, permanently.</p>
+      <p className="help" style={{ fontSize: 12 }}>A linked handle shows as the creator on your tokens, and a linked X can launch by tagging @EdenOnElysium. Each account links to one Eden wallet, permanently.</p>
       <div className="sep" />
     </>
   );

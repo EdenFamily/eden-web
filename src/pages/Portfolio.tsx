@@ -8,6 +8,7 @@ import { I } from "../components/icons";
 import { Link, navigate } from "../components/router";
 import { askToConnect } from "../components/Shell";
 import { TokenImage, toast, useData } from "../components/ui";
+import { LinkXNudge } from "../components/LinkXNudge";
 
 /** Signed out: what the page is for and one button. Shared with Referrals. */
 export function Gate({ title, body, icon }: { title: string; body: string; icon: JSX.Element }) {
@@ -54,6 +55,7 @@ export function Portfolio() {
   return (
     <div className="wrap">
       <div className="head"><h1>Portfolio</h1></div>
+      <LinkXNudge />
       <div className="stats">
         <div className="panel tex stat"><span className="lbl">Token value</span><span className="v">{data ? (hypeUsd ? usd(value) : hype(valueHype)) : <span className="skel" style={{ width: 90, height: 22 }} />}</span>{data && hypeUsd > 0 && <span className="d muted">{hype(valueHype)}</span>}</div>
         <div className="panel tex stat"><span className="lbl">HYPE balance</span><span className="v">{hype(fromWei(w.balance ?? 0n))}</span><span className="d muted">{hypeUsd ? usd(fromWei(w.balance ?? 0n) * hypeUsd) : ""}</span></div>

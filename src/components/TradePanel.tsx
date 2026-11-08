@@ -89,7 +89,10 @@ export function TradePanel({ t }: { t: Token }) {
   const impact = q ? q.impactBps / 100 : 0;
 
   async function poolTrade(me: Address, out: bigint) {
-    const deadline = (await publicClient.getBlock()).timestamp + 120n;
+    // 10 minutes from the later of the chain's last block and this clock: room to confirm in the wallet, and a quiet
+    // chain (whose next block is stamped with the current time) can't put it in the past. Price is bounded by minOut.
+    const last = (await publicClient.getBlock()).timestamp, now = BigInt(Math.floor(Date.now() / 1000));
+    const deadline = (last > now ? last : now) + 600n;
     let permit: { permit: Permit; signature: Hex } | undefined;
     if (side === "sell") {
       const toPermit2 = await publicClient.readContract({ address: t.address as Address, abi: erc20Abi, functionName: "allowance", args: [me, UNISWAP.permit2] });

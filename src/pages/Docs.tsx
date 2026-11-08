@@ -10,6 +10,7 @@ const SECTIONS = [
   ["protection", "Launch protection"],
   ["create", "Creating a token"],
   ["identity", "Creator identity"],
+  ["x-launch", "Launch from X"],
   ["referrals", "Referrals"],
   ["network", "Network and contracts"],
   ["risks", "Risks"],
@@ -118,6 +119,19 @@ export function Docs() {
             <h2>Creator identity</h2>
             <p>Link your <b>X</b> and/or <b>TikTok</b> account from the wallet menu. Your handle then shows as the creator on your tokens, with the platform's logo, instead of your wallet address. You link by logging in to that account, so nobody can claim a handle that isn't theirs.</p>
             <p>Each X or TikTok account can be linked to <b>one Eden wallet, once</b>. Links are permanent.</p>
+          </section>
+
+          <section id="x-launch">
+            <h2>Launch from X <span className="soon">Soon</span></h2>
+            <p>Launch a token without opening Eden: post on X and tag <b>@edenfamily</b> with a ticker and a name, and attach an image.</p>
+            <div className="panel tex doc-example"><span className="mono">@edenfamily $FROG Frog</span></div>
+            <ul>
+              <li><b>Ticker</b> is the word after <span className="mono">$</span>; <b>name</b> is the rest of the text. The attached image becomes the token's logo.</li>
+              <li>Reply to any post with the same text to turn that post into a token. Its image is used.</li>
+              <li>Eden launches the token and replies to you with its contract address. Replies carry no links, so always check the contract address on Eden before you trade.</li>
+              <li><b>Creator fees go to you.</b> If your X account is linked to an Eden wallet, they go straight to that wallet. If not, they are held for you until you link X on Eden, then move to your wallet.</li>
+              <li>Launching from X costs you nothing; Eden pays the launch. The same limit of 5 launches a month applies, along with spam limits such as a minimum account age and one launch per post.</li>
+            </ul>
           </section>
 
           <section id="referrals">

@@ -78,8 +78,7 @@ export function Builders() {
           <input className="bd-hp" name="company" tabIndex={-1} autoComplete="off" aria-hidden="true" />
         </fieldset>
         {state.at === "error" && <p className="bd-err" role="alert">{state.message}{state.mail && <> <a href={state.mail}>Send it by email instead</a>, or write to {SUPPORT}.</>}</p>}
-        <div className="bd-actions"><button className="btn btn-primary" type="submit" disabled={state.at === "sending"}>{state.at === "sending" ? "Sending…" : "Send to the team"}</button>
-          <span className="faint">Sent straight to the team. Nothing is stored on this site.</span></div>
+        <div className="bd-actions"><button className="btn btn-primary" type="submit" disabled={state.at === "sending"}>{state.at === "sending" ? "Sending…" : "Send to the team"}</button></div>
       </form>
     </div>
   );
